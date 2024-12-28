@@ -91,7 +91,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
@@ -231,6 +231,18 @@ require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
 
+  { 'j-hui/fidget.nvim', opts = {} },
+
+  {
+    'goolord/alpha-nvim',
+    dependencies = {
+      'echasnovski/mini.icons',
+    },
+    config = function()
+      require('alpha').setup(require('alpha.themes.startify').config)
+    end,
+  },
+
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
   -- keys can be used to configure plugin behavior/loading/etc.
@@ -245,13 +257,91 @@ require('lazy').setup({
   -- See `:help gitsigns` to understand what the configuration keys do
   { -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
+    opts = {},
+  },
+
+  {
+    'folke/snacks.nvim',
+    priority = 1000,
+    lazy = false,
+    ---@type snacks.Config
     opts = {
-      signs = {
-        add = { text = '+' },
-        change = { text = '~' },
-        delete = { text = '_' },
-        topdelete = { text = '‾' },
-        changedelete = { text = '~' },
+      statuscolumn = { enable = true },
+      lazygit = { enable = true },
+    },
+  },
+  {
+    'refractalize/oil-git-status.nvim',
+    config = true,
+  },
+  {
+    'stevearc/oil.nvim',
+    opts = {
+      win_options = {
+        signcolumn = 'yes:2',
+      },
+    },
+  },
+
+  { 'windwp/nvim-ts-autotag', opts = {} },
+  {
+    'windwp/nvim-autopairs',
+    event = 'InsertEnter',
+    config = true,
+    opts = {},
+    -- use opts = {} for passing setup options
+    -- this is equivalent to setup({}) function
+  },
+  { -- Add indentation guides even on blank lines
+    'lukas-reineke/indent-blankline.nvim',
+    -- Enable `lukas-reineke/indent-blankline.nvim`
+    -- See `:help ibl`
+    main = 'ibl',
+    opts = {},
+  },
+  {
+    'yetone/avante.nvim',
+    event = 'VeryLazy',
+    lazy = false,
+    version = false, -- set this if you want to always pull the latest change
+    opts = {
+      -- add any opts here
+    },
+    -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
+    build = 'make',
+    -- build = "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false" -- for windows
+    dependencies = {
+      'stevearc/dressing.nvim',
+      'nvim-lua/plenary.nvim',
+      'MunifTanjim/nui.nvim',
+      --- The below dependencies are optional,
+      'hrsh7th/nvim-cmp', -- autocompletion for avante commands and mentions
+      'nvim-tree/nvim-web-devicons', -- or echasnovski/mini.icons
+      'zbirenbaum/copilot.lua', -- for providers='copilot'
+      {
+        -- support for image pasting
+        'HakonHarnes/img-clip.nvim',
+        event = 'VeryLazy',
+        opts = {
+          -- recommended settings
+          default = {
+            embed_image_as_base64 = false,
+            prompt_for_file_name = false,
+            drag_and_drop = {
+              insert_mode = true,
+            },
+            -- required for Windows users
+            use_absolute_path = true,
+          },
+        },
+      },
+      {
+        -- Make sure to set this up properly if you have lazy=true
+        'MeanderingProgrammer/render-markdown.nvim',
+        opts = {
+          file_types = { 'markdown', 'Avante' },
+        },
+        ft = { 'markdown', 'Avante' },
       },
     },
   },
@@ -270,56 +360,21 @@ require('lazy').setup({
   -- Then, because we use the `opts` key (recommended), the configuration runs
   -- after the plugin has been loaded as `require(MODULE).setup(opts)`.
 
-  { -- Useful plugin to show you pending keybinds.
+  {
     'folke/which-key.nvim',
-    event = 'VimEnter', -- Sets the loading event to 'VimEnter'
+    event = 'VeryLazy',
     opts = {
-      icons = {
-        -- set icon mappings to true if you have a Nerd Font
-        mappings = vim.g.have_nerd_font,
-        -- If you are using a Nerd Font: set icons.keys to an empty table which will use the
-        -- default which-key.nvim defined Nerd Font icons, otherwise define a string table
-        keys = vim.g.have_nerd_font and {} or {
-          Up = '<Up> ',
-          Down = '<Down> ',
-          Left = '<Left> ',
-          Right = '<Right> ',
-          C = '<C-…> ',
-          M = '<M-…> ',
-          D = '<D-…> ',
-          S = '<S-…> ',
-          CR = '<CR> ',
-          Esc = '<Esc> ',
-          ScrollWheelDown = '<ScrollWheelDown> ',
-          ScrollWheelUp = '<ScrollWheelUp> ',
-          NL = '<NL> ',
-          BS = '<BS> ',
-          Space = '<Space> ',
-          Tab = '<Tab> ',
-          F1 = '<F1>',
-          F2 = '<F2>',
-          F3 = '<F3>',
-          F4 = '<F4>',
-          F5 = '<F5>',
-          F6 = '<F6>',
-          F7 = '<F7>',
-          F8 = '<F8>',
-          F9 = '<F9>',
-          F10 = '<F10>',
-          F11 = '<F11>',
-          F12 = '<F12>',
-        },
-      },
-
-      -- Document existing key chains
-      spec = {
-        { '<leader>c', group = '[C]ode', mode = { 'n', 'x' } },
-        { '<leader>d', group = '[D]ocument' },
-        { '<leader>r', group = '[R]ename' },
-        { '<leader>s', group = '[S]earch' },
-        { '<leader>w', group = '[W]orkspace' },
-        { '<leader>t', group = '[T]oggle' },
-        { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
+      -- your configuration comes here
+      -- or leave it empty to use the default settings
+      -- refer to the configuration section below
+    },
+    keys = {
+      {
+        '<leader>?',
+        function()
+          require('which-key').show { global = false }
+        end,
+        desc = 'Buffer Local Keymaps (which-key)',
       },
     },
   },
@@ -450,6 +505,13 @@ require('lazy').setup({
     },
   },
   { 'Bilal2453/luvit-meta', lazy = true },
+  {
+    'stevearc/quicker.nvim',
+    event = 'FileType qf',
+    ---@module "quicker"
+    ---@type quicker.SetupOptions
+    opts = {},
+  },
   {
     -- Main LSP Configuration
     'neovim/nvim-lspconfig',
@@ -965,5 +1027,74 @@ require('lazy').setup({
   },
 })
 
--- The line beneath this is called `modeline`. See `:help modeline`
--- vim: ts=2 sts=2 sw=2 et
+vim.keymap.set('n', '-', '<CMD>Oil<CR>', { desc = 'Open parent directory' })
+vim.keymap.set('n', '<leader>lg', '<CMD>lua Snacks.lazygit()<CR>', { desc = 'Lazygit' })
+
+vim.keymap.set('n', '<C-l>', ':w<CR>', { desc = 'Save file' })
+vim.keymap.set('i', '<C-l>', '<C-o>:w<CR>', { desc = 'Save file' })
+
+local ls = require 'luasnip'
+
+local v = {
+  ls.parser.parse_snippet('ts', '// @ts-expect-error'),
+  ls.parser.parse_snippet('da', '// eslint-disable-next-line @typescript-eslint/no-explicit-any'),
+  ls.parser.parse_snippet('da', '// eslint-disable-next-line @typescript-eslint/no-floating-promises'),
+  ls.parser.parse_snippet('da', '// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition'),
+  ls.parser.parse_snippet('da', 'const decoder = new TextDecoder("utf8")'),
+  ls.parser.parse_snippet('pa', '/**\n* #property\n*/'),
+  ls.parser.parse_snippet('pa', '/**\n* #action\n*/'),
+  ls.parser.parse_snippet('pa', '/**\n* #getter\n*/'),
+  ls.parser.parse_snippet('pa', '/**\n* #method\n*/'),
+  ls.parser.parse_snippet('pa', '/**\n* #volatile\n*/'),
+  ls.parser.parse_snippet('ps', 'const {$1} = self'),
+  ls.parser.parse_snippet('cl', 'console.log({$1})'),
+  ls.parser.parse_snippet('cl', 'console.log($1)'),
+  ls.parser.parse_snippet('cl', 'console.log("$1")'),
+  ls.parser.parse_snippet('cl', 'console.log(e)'),
+  ls.parser.parse_snippet('wa', '"language":["$1"],'),
+  ls.parser.parse_snippet('wa', '"tags":["$1"],'),
+  ls.parser.parse_snippet('wa', '"pub":{"doi":""},'),
+}
+
+ls.add_snippets(nil, {
+  javascript = v,
+  javascriptreact = v,
+  typescript = v,
+  typescriptreact = v,
+  json = v,
+  rust = {
+    ls.parser.parse_snippet('cl', 'println!("{}",$1)'),
+  },
+  java = {
+    ls.parser.parse_snippet('cl', 'System.out.println($1)'),
+  },
+})
+
+vim.keymap.set('n', '<leader>q', function()
+  require('quicker').toggle()
+end, {
+  desc = 'Toggle quickfix',
+})
+vim.keymap.set('n', '<leader>l', function()
+  require('quicker').toggle { loclist = true }
+end, {
+  desc = 'Toggle loclist',
+})
+require('quicker').setup {
+  keys = {
+    {
+      '>',
+      function()
+        require('quicker').expand { before = 2, after = 2, add_to_existing = true }
+      end,
+      desc = 'Expand quickfix context',
+    },
+    {
+      '<',
+      function()
+        require('quicker').collapse()
+      end,
+      desc = 'Collapse quickfix context',
+    },
+  },
+}
