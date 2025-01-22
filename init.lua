@@ -504,13 +504,6 @@ require('lazy').setup({
     },
   },
   {
-    'stevearc/quicker.nvim',
-    event = 'FileType qf',
-    ---@module "quicker"
-    ---@type quicker.SetupOptions
-    opts = {},
-  },
-  {
     -- Main LSP Configuration
     'neovim/nvim-lspconfig',
     dependencies = {
@@ -889,6 +882,21 @@ require('lazy').setup({
       --  Check out: https://github.com/echasnovski/mini.nvim
     end,
   },
+  {
+    'folke/noice.nvim',
+    event = 'VeryLazy',
+    opts = {
+      -- add any options here
+    },
+    dependencies = {
+      -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
+      'MunifTanjim/nui.nvim',
+      -- OPTIONAL:
+      --   `nvim-notify` is only needed, if you want to use the notification view.
+      --   If not available, we use `mini` as the fallback
+      'rcarriga/nvim-notify',
+    },
+  },
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
@@ -972,15 +980,15 @@ vim.keymap.set('i', '<C-l>', '<C-o>:w<CR>', { desc = 'Save file' })
 local ls = require 'luasnip'
 
 local v = {
-  ls.parser.parse_snippet('ts', '// @ts-expect-error'),
-  ls.parser.parse_snippet('da', '// eslint-disable-next-line @typescript-eslint/no-explicit-any'),
-  ls.parser.parse_snippet('da', '// eslint-disable-next-line @typescript-eslint/no-floating-promises'),
-  ls.parser.parse_snippet('da', '// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition'),
-  ls.parser.parse_snippet('pa', '/**\n* #property\n*/'),
-  ls.parser.parse_snippet('pa', '/**\n* #action\n*/'),
-  ls.parser.parse_snippet('pa', '/**\n* #getter\n*/'),
-  ls.parser.parse_snippet('pa', '/**\n* #method\n*/'),
-  ls.parser.parse_snippet('pa', '/**\n* #volatile\n*/'),
+  ls.parser.parse_snippet('ttt', '// @ts-expect-error'),
+  ls.parser.parse_snippet('ddd', '// eslint-disable-next-line @typescript-eslint/no-explicit-any'),
+  ls.parser.parse_snippet('ddd', '// eslint-disable-next-line @typescript-eslint/no-floating-promises'),
+  ls.parser.parse_snippet('ddd', '// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition'),
+  ls.parser.parse_snippet('ppp', '/**\n* #property\n*/'),
+  ls.parser.parse_snippet('ppp', '/**\n* #action\n*/'),
+  ls.parser.parse_snippet('ppp', '/**\n* #getter\n*/'),
+  ls.parser.parse_snippet('ppp', '/**\n* #method\n*/'),
+  ls.parser.parse_snippet('ppp', '/**\n* #volatile\n*/'),
   ls.parser.parse_snippet('ps', 'const {$1} = self'),
   ls.parser.parse_snippet('cll', 'console.log({$1})'),
   ls.parser.parse_snippet('cll', 'console.log($1)'),
@@ -989,6 +997,8 @@ local v = {
   ls.parser.parse_snippet('wa', '"language":["$1"],'),
   ls.parser.parse_snippet('wa', '"tags":["$1"],'),
   ls.parser.parse_snippet('wa', '"pub":{"doi":""},'),
+  ls.parser.parse_snippet('caa', 'import {makeStyles} from "tss-react/mui"\nconst useStyles=makeStyles()({$1})'),
+  ls.parser.parse_snippet('caa', 'const {classes}=useStyles()'),
 }
 
 ls.add_snippets(nil, {
@@ -1033,5 +1043,22 @@ require('quicker').setup {
     },
   },
 }
-
+require('noice').setup {
+  lsp = {
+    -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
+    override = {
+      ['vim.lsp.util.convert_input_to_markdown_lines'] = true,
+      ['vim.lsp.util.stylize_markdown'] = true,
+      ['cmp.entry.get_documentation'] = true, -- requires hrsh7th/nvim-cmp
+    },
+  },
+  -- you can enable a preset for easier configuration
+  presets = {
+    bottom_search = true, -- use a classic bottom cmdline for search
+    command_palette = true, -- position the cmdline and popupmenu together
+    long_message_to_split = true, -- long messages will be sent to a split
+    inc_rename = false, -- enables an input dialog for inc-rename.nvim
+    lsp_doc_border = false, -- add a border to hover docs and signature help
+  },
+}
 vim.keymap.set('n', '<leader>l', '<cmd>Lazy<cr>', { desc = 'Lazy' })
