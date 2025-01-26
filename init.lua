@@ -1,89 +1,3 @@
---[[
-
-=====================================================================
-==================== READ THIS BEFORE CONTINUING ====================
-=====================================================================
-========                                    .-----.          ========
-========         .----------------------.   | === |          ========
-========         |.-""""""""""""""""""-.|   |-----|          ========
-========         ||                    ||   | === |          ========
-========         ||   KICKSTART.NVIM   ||   |-----|          ========
-========         ||                    ||   | === |          ========
-========         ||                    ||   |-----|          ========
-========         ||:Tutor              ||   |:::::|          ========
-========         |'-..................-'|   |____o|          ========
-========         `"")----------------(""`   ___________      ========
-========        /::::::::::|  |::::::::::\  \ no mouse \     ========
-========       /:::========|  |==hjkl==:::\  \ required \    ========
-========      '""""""""""""'  '""""""""""""'  '""""""""""'   ========
-========                                                     ========
-=====================================================================
-=====================================================================
-
-What is Kickstart?
-
-  Kickstart.nvim is *not* a distribution.
-
-  Kickstart.nvim is a starting point for your own configuration.
-    The goal is that you can read every line of code, top-to-bottom, understand
-    what your configuration is doing, and modify it to suit your needs.
-
-    Once you've done that, you can start exploring, configuring and tinkering to
-    make Neovim your own! That might mean leaving Kickstart just the way it is for a while
-    or immediately breaking it into modular pieces. It's up to you!
-
-    If you don't know anything about Lua, I recommend taking some time to read through
-    a guide. One possible example which will only take 10-15 minutes:
-      - https://learnxinyminutes.com/docs/lua/
-
-    After understanding a bit more about Lua, you can use `:help lua-guide` as a
-    reference for how Neovim integrates Lua.
-    - :help lua-guide
-    - (or HTML version): https://neovim.io/doc/user/lua-guide.html
-
-Kickstart Guide:
-
-  TODO: The very first thing you should do is to run the command `:Tutor` in Neovim.
-
-    If you don't know what this means, type the following:
-      - <escape key>
-      - :
-      - Tutor
-      - <enter key>
-
-    (If you already know the Neovim basics, you can skip this step.)
-
-  Once you've completed that, you can continue working through **AND READING** the rest
-  of the kickstart init.lua.
-
-  Next, run AND READ `:help`.
-    This will open up a help window with some basic information
-    about reading, navigating and searching the builtin help documentation.
-
-    This should be the first place you go to look when you're stuck or confused
-    with something. It's one of my favorite Neovim features.
-
-    MOST IMPORTANTLY, we provide a keymap "<space>sh" to [s]earch the [h]elp documentation,
-    which is very useful when you're not exactly sure of what you're looking for.
-
-  I have left several `:help X` comments throughout the init.lua
-    These are hints about where to find more information about the relevant settings,
-    plugins or Neovim features used in Kickstart.
-
-   NOTE: Look for lines like this
-
-    Throughout the file. These are for you, the reader, to help you understand what is happening.
-    Feel free to delete them once you know what you're doing, but they should serve as a guide
-    for when you are first encountering a few different constructs in your Neovim config.
-
-If you experience any errors while trying to install kickstart, run `:checkhealth` for more info.
-
-I hope you enjoy your Neovim journey,
-- TJ
-
-P.S. You can delete this when you're done too. It's your config now! :)
---]]
-
 -- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
@@ -170,12 +84,13 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
--- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
--- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
--- is not what someone will guess without a bit more experience.
+-- Exit terminal mode in the builtin terminal with a shortcut that is a bit
+-- easier for people to discover. Otherwise, you normally need to press
+-- <C-\><C-n>, which is not what someone will guess without a bit more
+-- experience.
 --
--- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
--- or just use <C-\><C-n> to exit terminal mode
+-- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own
+-- mapping or just use <C-\><C-n> to exit terminal mode
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
 -- TIP: Disable arrow keys in normal mode
@@ -235,7 +150,16 @@ require('lazy').setup({
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
   { 'ruifm/gitlinker.nvim', opts = {} },
   { 'j-hui/fidget.nvim', opts = {} },
-
+  {
+    'kylechui/nvim-surround',
+    version = '*', -- Use for stability; omit to use `main` branch for the latest features
+    event = 'VeryLazy',
+    config = function()
+      require('nvim-surround').setup {
+        -- Configuration here, or leave empty to use defaults
+      }
+    end,
+  },
   { 'folke/persistence.nvim' },
   {
     'folke/flash.nvim',
@@ -244,7 +168,7 @@ require('lazy').setup({
     opts = {},
     keys = {
       {
-        's',
+        'f',
         mode = { 'n', 'x', 'o' },
         function()
           require('flash').jump()
@@ -252,7 +176,7 @@ require('lazy').setup({
         desc = 'Flash',
       },
       {
-        'S',
+        'F',
         mode = { 'n', 'x', 'o' },
         function()
           require('flash').treesitter()
@@ -774,17 +698,7 @@ require('lazy').setup({
     -- build = 'nix run .#build-plugin',
     ---@module 'blink.cmp'
     ---@type blink.cmp.Config
-    dependencies = {
-      'L3MON4D3/LuaSnip',
-      version = 'v2.*',
-    },
     opts = {
-      snippets = { preset = 'luasnip' },
-
-      -- 'default' for mappings similar to built-in completion
-      -- 'super-tab' for mappings similar to vscode (tab to accept, arrow keys to navigate)
-      -- 'enter' for mappings similar to 'super-tab' but with 'enter' to accept
-      -- See the full "keymap" documentation for information on defining your own keymap.
       keymap = {
         preset = 'super-tab',
       },
@@ -805,10 +719,6 @@ require('lazy').setup({
       },
 
       appearance = {
-        -- Sets the fallback highlight groups to nvim-cmp's highlight groups
-        -- Useful for when your theme doesn't support blink.cmp
-        -- Will be removed in a future release
-        use_nvim_cmp_as_default = true,
         -- Set to 'mono' for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
         -- Adjusts spacing to ensure icons are aligned
         nerd_font_variant = 'mono',
@@ -882,28 +792,25 @@ require('lazy').setup({
       --  Check out: https://github.com/echasnovski/mini.nvim
     end,
   },
-  {
-    'folke/noice.nvim',
-    event = 'VeryLazy',
-    opts = {
-      -- add any options here
-    },
-    dependencies = {
-      -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
-      'MunifTanjim/nui.nvim',
-      -- OPTIONAL:
-      --   `nvim-notify` is only needed, if you want to use the notification view.
-      --   If not available, we use `mini` as the fallback
-      'rcarriga/nvim-notify',
-    },
-  },
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+      ensure_installed = {
+        'bash',
+        'c',
+        'diff',
+        'html',
+        'lua',
+        'luadoc',
+        'markdown',
+        'markdown_inline',
+        'query',
+        'vim',
+        'vimdoc',
+      },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -977,88 +884,4 @@ vim.keymap.set('n', '<leader>lg', '<CMD>lua Snacks.lazygit()<CR>', { desc = 'Laz
 vim.keymap.set('n', '<C-l>', ':w<CR>', { desc = 'Save file' })
 vim.keymap.set('i', '<C-l>', '<C-o>:w<CR>', { desc = 'Save file' })
 
-local ls = require 'luasnip'
-
-local v = {
-  ls.parser.parse_snippet('ttt', '// @ts-expect-error'),
-  ls.parser.parse_snippet('ddd', '// eslint-disable-next-line @typescript-eslint/no-explicit-any'),
-  ls.parser.parse_snippet('ddd', '// eslint-disable-next-line @typescript-eslint/no-floating-promises'),
-  ls.parser.parse_snippet('ddd', '// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition'),
-  ls.parser.parse_snippet('ppp', '/**\n* #property\n*/'),
-  ls.parser.parse_snippet('ppp', '/**\n* #action\n*/'),
-  ls.parser.parse_snippet('ppp', '/**\n* #getter\n*/'),
-  ls.parser.parse_snippet('ppp', '/**\n* #method\n*/'),
-  ls.parser.parse_snippet('ppp', '/**\n* #volatile\n*/'),
-  ls.parser.parse_snippet('ps', 'const {$1} = self'),
-  ls.parser.parse_snippet('cll', 'console.log({$1})'),
-  ls.parser.parse_snippet('cll', 'console.log($1)'),
-  ls.parser.parse_snippet('cll', 'console.log("$1")'),
-  ls.parser.parse_snippet('cll', 'console.log(e)'),
-  ls.parser.parse_snippet('wa', '"language":["$1"],'),
-  ls.parser.parse_snippet('wa', '"tags":["$1"],'),
-  ls.parser.parse_snippet('wa', '"pub":{"doi":""},'),
-  ls.parser.parse_snippet('caa', 'import {makeStyles} from "tss-react/mui"\nconst useStyles=makeStyles()({$1})'),
-  ls.parser.parse_snippet('caa', 'const {classes}=useStyles()'),
-}
-
-ls.add_snippets(nil, {
-  javascript = v,
-  javascriptreact = v,
-  typescript = v,
-  typescriptreact = v,
-  json = v,
-  rust = {
-    ls.parser.parse_snippet('cl', 'println!("{}",$1)'),
-  },
-  java = {
-    ls.parser.parse_snippet('cl', 'System.out.println($1)'),
-  },
-})
-
-vim.keymap.set('n', '<leader>q', function()
-  require('quicker').toggle()
-end, {
-  desc = 'Toggle quickfix',
-})
-vim.keymap.set('n', '<leader>l', function()
-  require('quicker').toggle { loclist = true }
-end, {
-  desc = 'Toggle loclist',
-})
-require('quicker').setup {
-  keys = {
-    {
-      '>',
-      function()
-        require('quicker').expand { before = 2, after = 2, add_to_existing = true }
-      end,
-      desc = 'Expand quickfix context',
-    },
-    {
-      '<',
-      function()
-        require('quicker').collapse()
-      end,
-      desc = 'Collapse quickfix context',
-    },
-  },
-}
-require('noice').setup {
-  lsp = {
-    -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
-    override = {
-      ['vim.lsp.util.convert_input_to_markdown_lines'] = true,
-      ['vim.lsp.util.stylize_markdown'] = true,
-      ['cmp.entry.get_documentation'] = true, -- requires hrsh7th/nvim-cmp
-    },
-  },
-  -- you can enable a preset for easier configuration
-  presets = {
-    bottom_search = true, -- use a classic bottom cmdline for search
-    command_palette = true, -- position the cmdline and popupmenu together
-    long_message_to_split = true, -- long messages will be sent to a split
-    inc_rename = false, -- enables an input dialog for inc-rename.nvim
-    lsp_doc_border = false, -- add a border to hover docs and signature help
-  },
-}
 vim.keymap.set('n', '<leader>l', '<cmd>Lazy<cr>', { desc = 'Lazy' })

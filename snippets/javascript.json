@@ -1,0 +1,46 @@
+{
+  "console.log": {
+    "body": ["console.log($1)"],
+    "prefix": "cll"
+  },
+  "actions": {
+    "body": ["/**\n* #action\n*/"],
+    "prefix": "ppp"
+  },
+  "getter": {
+    "body": ["/**\n* #getter\n*/"],
+    "prefix": "ppp"
+  },
+  "volatile": {
+    "body": ["/**\n* #volatile\n*/"],
+    "prefix": "ppp"
+  },
+  "method": {
+    "body": ["/**\n* #method\n*/"],
+    "prefix": "ppp"
+  },
+  "property": {
+    "body": ["/**\n* #property\n*/"],
+    "prefix": "ppp"
+  },
+  "slot": {
+    "body": ["/**\n* #slot\n*/"],
+    "prefix": "ppp"
+  },
+  "ts-ignore": {
+    "body": "// @ts-expect-error",
+    "prefix": "ttt"
+  },
+  "no-explicit-any": {
+    "body": "// eslint-disable-next-line @typescript-eslint/no-explicit-any",
+    "prefix": "ddd"
+  },
+  "no-floating-promises": {
+    "body": "// eslint-disable-next-line @typescript-eslint/no-floating-promises",
+    "prefix": "ddd"
+  },
+  "no-unnecessary-condition": {
+    "body": "// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition",
+    "prefix": "ddd"
+  }
+}

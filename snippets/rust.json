@@ -1,0 +1,6 @@
+{
+  "console.log": {
+    "body": ["println!(\"{}\",$1)"],
+    "prefix": "cll"
+  }
+}

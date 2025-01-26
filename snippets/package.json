@@ -1,0 +1,28 @@
+{
+  "contributes": {
+    "snippets": [
+      {
+        "language": [
+          "java"
+        ],
+        "path": "./java.json"
+      },
+      {
+        "language": [
+          "rust"
+        ],
+        "path": "./rust.json"
+      },
+      {
+        "language": [
+          "javascript",
+          "typescript",
+          "typescriptreact",
+          "javascriptreact"
+        ],
+        "path": "./javascript.json"
+      }
+    ]
+  },
+  "name": "my-snippets"
+}
