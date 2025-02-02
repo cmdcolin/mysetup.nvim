@@ -29,7 +29,7 @@
   },
   "ts-ignore": {
     "body": "// @ts-expect-error",
-    "prefix": "ttt"
+    "prefix": "tss"
   },
   "no-explicit-any": {
     "body": "// eslint-disable-next-line @typescript-eslint/no-explicit-any",
