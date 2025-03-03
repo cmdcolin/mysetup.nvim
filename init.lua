@@ -1142,3 +1142,5 @@ vim.keymap.set('n', '<C-l>', ':w<CR>', { desc = 'Save file' })
 vim.keymap.set('i', '<C-l>', '<C-o>:w<CR>', { desc = 'Save file' })
 
 vim.keymap.set('n', '<leader>l', '<cmd>Lazy<cr>', { desc = 'Lazy' })
+vim.keymap.set('n', '<c-w>d', vim.diagnostic.open_float)
+vim.keymap.set('n', '<leader>ac', '<cmd>AvanteClear<cr>')
