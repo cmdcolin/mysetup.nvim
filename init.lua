@@ -229,6 +229,12 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
+  {
+    'catgoose/nvim-colorizer.lua',
+    event = 'BufReadPre',
+    opts = { -- set to setup table
+    },
+  },
 
   {
     'goolord/alpha-nvim',
@@ -290,7 +296,12 @@ require('lazy').setup({
       },
     },
   },
-
+  {
+    'max397574/better-escape.nvim',
+    config = function()
+      require('better_escape').setup()
+    end,
+  },
   { 'nvim-tree/nvim-web-devicons' },
   {
     'nvim-lualine/lualine.nvim',
@@ -1143,4 +1154,6 @@ vim.keymap.set('i', '<C-l>', '<C-o>:w<CR>', { desc = 'Save file' })
 
 vim.keymap.set('n', '<leader>l', '<cmd>Lazy<cr>', { desc = 'Lazy' })
 vim.keymap.set('n', '<c-w>d', vim.diagnostic.open_float)
-vim.keymap.set('n', '<leader>ac', '<cmd>AvanteClear<cr>')
+vim.keymap.set('n', '<leader>aC', '<cmd>AvanteClear<cr>')
+
+require('colorizer').attach_to_buffer(0, { mode = 'background', css = true })
