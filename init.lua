@@ -503,44 +503,12 @@ require('lazy').setup({
     },
     keys = {
       {
-        'zu',
+        's',
         mode = { 'n', 'x', 'o' },
         function()
           require('flash').jump()
         end,
         desc = 'Flash',
-      },
-      {
-        'zU',
-        mode = { 'n', 'x', 'o' },
-        function()
-          require('flash').treesitter()
-        end,
-        desc = 'Flash Treesitter',
-      },
-      {
-        'r',
-        mode = 'o',
-        function()
-          require('flash').remote()
-        end,
-        desc = 'Remote Flash',
-      },
-      {
-        'R',
-        mode = { 'o', 'x' },
-        function()
-          require('flash').treesitter_search()
-        end,
-        desc = 'Treesitter Search',
-      },
-      {
-        '<c-s>',
-        mode = { 'c' },
-        function()
-          require('flash').toggle()
-        end,
-        desc = 'Toggle Flash Search',
       },
     },
   },
@@ -1021,12 +989,7 @@ require('lazy').setup({
         sh = { 'shfmt' },
         bash = { 'shfmt' },
         zsh = { 'shfmt' },
-
-        -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
-        --
-        -- You can use 'stop_after_first' to run the first available formatter from the list
-        -- javascript = { "prettierd", "prettier", stop_after_first = true },
+        python = { 'ruff' },
       },
     },
   },
@@ -1169,4 +1132,15 @@ vim.keymap.set('n', '<leader>l', '<cmd>Lazy<cr>', { desc = 'Lazy' })
 vim.keymap.set('n', '<c-w>d', vim.diagnostic.open_float)
 vim.keymap.set('n', '<leader>aC', '<cmd>AvanteClear<cr>')
 
-require('colorizer').attach_to_buffer(0, { mode = 'background', css = true })
+require('colorizer').attach_to_buffer(0, {
+  mode = 'background',
+  css = true,
+})
+
+-- copy file path to clipboard
+function insertFullPath()
+  local filepath = vim.fn.expand '%'
+  vim.fn.setreg('+', filepath)
+end
+
+vim.keymap.set('n', '<leader>pc', insertFullPath, { noremap = true, silent = true })
