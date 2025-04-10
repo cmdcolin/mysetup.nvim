@@ -317,7 +317,6 @@ require('lazy').setup({
   { -- Fuzzy Finder (files, lsp, etc)
     'nvim-telescope/telescope.nvim',
     event = 'VimEnter',
-    branch = '0.1.x',
     dependencies = {
       'nvim-lua/plenary.nvim',
       { -- If encountering errors, see telescope-fzf-native README for installation instructions
@@ -476,20 +475,6 @@ require('lazy').setup({
             -- required for Windows users
             use_absolute_path = true,
           },
-        },
-      },
-      {
-        -- Make sure to set this up properly if you have lazy=true
-        'MeanderingProgrammer/render-markdown.nvim',
-        opts = {
-          file_types = {
-            'markdown',
-            'Avante',
-          },
-        },
-        ft = {
-          'markdown',
-          'Avante',
         },
       },
     },
