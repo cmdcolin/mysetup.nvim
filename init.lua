@@ -1116,6 +1116,7 @@ vim.keymap.set('n', '<leader>lg', '<CMD>lua Snacks.lazygit()<CR>', { desc = 'Laz
 
 vim.keymap.set('n', '<C-l>', ':w<CR>', { desc = 'Save file' })
 vim.keymap.set('i', '<C-l>', '<C-o>:w<CR>', { desc = 'Save file' })
+vim.keymap.set('i', '<C-k>', '<C-o>:w<CR><Esc>', { desc = 'Save file and exit' })
 
 vim.keymap.set('n', '<leader>l', '<cmd>Lazy<cr>', { desc = 'Lazy' })
 vim.keymap.set('n', '<c-w>d', vim.diagnostic.open_float)
