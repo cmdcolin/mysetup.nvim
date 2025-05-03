@@ -46,5 +46,9 @@
   "no-unnecessary-condition": {
     "body": "// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition",
     "prefix": "ddd"
+  },
+  "makeStyles": {
+    "body": "const useStyles=makeStyles()({}})",
+    "prefix": "mmm"
   }
 }
