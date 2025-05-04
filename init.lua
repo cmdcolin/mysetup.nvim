@@ -7,7 +7,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
@@ -147,6 +147,7 @@ end ---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup {
+  'tpope/vim-sleuth',
   {
     'catgoose/nvim-colorizer.lua',
     event = 'BufReadPre',
@@ -216,18 +217,16 @@ require('lazy').setup {
     'max397574/better-escape.nvim',
     opts = {},
   },
-  {
-    'nvim-tree/nvim-web-devicons',
-  },
+  'nvim-tree/nvim-web-devicons',
   {
     'nvim-lualine/lualine.nvim',
-    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    dependencies = {
+      'nvim-tree/nvim-web-devicons',
+    },
   },
   {
-    {
-      'youyoumu/pretty-ts-errors.nvim',
-      opts = {},
-    },
+    'youyoumu/pretty-ts-errors.nvim',
+    opts = {},
   },
   {
     'nvzone/showkeys',
@@ -693,41 +692,19 @@ require('lazy').setup {
     'yetone/avante.nvim',
     event = 'VeryLazy',
     version = false, -- Never set this value to "*"! Never!
-    behaviour = {
-      auto_apply_diff_after_generation = true,
+    opts = {
+      provider = 'claude',
+      behaviour = {
+        auto_apply_diff_after_generation = true,
+      },
     },
-    -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
+
     build = 'make',
-    -- build = "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false" -- for windows
     dependencies = {
       'nvim-treesitter/nvim-treesitter',
       'stevearc/dressing.nvim',
       'nvim-lua/plenary.nvim',
       'MunifTanjim/nui.nvim',
-
-      --- The below dependencies are optional,
-      'echasnovski/mini.pick', -- for file_selector provider mini.pick
-      'nvim-telescope/telescope.nvim', -- for file_selector provider telescope
-      'ibhagwan/fzf-lua', -- for file_selector provider fzf
-      'nvim-tree/nvim-web-devicons', -- or echasnovski/mini.icons
-      'zbirenbaum/copilot.lua', -- for providers='copilot'
-      {
-        -- support for image pasting
-        'HakonHarnes/img-clip.nvim',
-        event = 'VeryLazy',
-        opts = {
-          -- recommended settings
-          default = {
-            embed_image_as_base64 = false,
-            prompt_for_file_name = false,
-            drag_and_drop = {
-              insert_mode = true,
-            },
-            -- required for Windows users
-            use_absolute_path = true,
-          },
-        },
-      },
     },
   },
   {
@@ -756,9 +733,7 @@ require('lazy').setup {
     'j-hui/fidget.nvim',
     opts = {},
   },
-  {
-    'folke/persistence.nvim',
-  },
+  'folke/persistence.nvim',
   {
     'lewis6991/gitsigns.nvim',
     opts = {},
@@ -807,9 +782,6 @@ require('lazy').setup {
       },
     },
     opts = {},
-  },
-  {
-    'Kaiser-Yang/blink-cmp-avante',
   },
   {
     'saghen/blink.cmp',
@@ -894,34 +866,16 @@ require('lazy').setup {
       vim.api.nvim_create_autocmd('LspAttach', {
         group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
         callback = function(event)
-          -- NOTE: Remember that Lua is a real programming language, and as
-          -- such it is possible to define small helper and utility functions
-          -- so you don't have to repeat yourself.
-          --
           -- In this case, we create a function that lets us more easily define
           -- mappings specific for LSP related items. It sets the mode, buffer
           -- and description for us each time.
           local map = function(keys, func, desc, mode)
             mode = mode or 'n'
-            vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
+            vim.keymap.set(mode, keys, func, {
+              buffer = event.buf,
+              desc = 'LSP: ' .. desc,
+            })
           end
-
-          -- Jump to the definition of the word under your cursor.
-          --  This is where a variable was first declared, or where a function is defined, etc.
-          --  To jump back, press <C-t>.
-          map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
-
-          -- Find references for the word under your cursor.
-          map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
-
-          -- Jump to the implementation of the word under your cursor.
-          --  Useful when your language has ways of declaring types without an actual implementation.
-          map('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
-
-          -- Jump to the type of the word under your cursor.
-          --  Useful when you're not sure what type a variable is and you want to see
-          --  the definition of its *type*, not where it was *defined*.
-          map('<leader>D', require('telescope.builtin').lsp_type_definitions, 'Type [D]efinition')
 
           -- Rename the variable under your cursor.
           --  Most Language Servers support renaming across files, etc.
@@ -1170,13 +1124,10 @@ require('lazy').setup {
       vim.cmd.hi 'Comment gui=none'
     end,
   },
-  { 'ribru17/bamboo.nvim' },
-  {
-    'rebelot/kanagawa.nvim',
-  },
-  {
-    'ellisonleao/gruvbox.nvim',
-  },
+  'ribru17/bamboo.nvim',
+  'rebelot/kanagawa.nvim',
+  'neanias/everforest-nvim',
+  'ellisonleao/gruvbox.nvim',
   {
     'catppuccin/nvim',
     name = 'catppuccin',
@@ -1185,9 +1136,6 @@ require('lazy').setup {
   {
     'rose-pine/neovim',
     name = 'rose-pine',
-  },
-  {
-    'neanias/everforest-nvim',
   },
 
   {
@@ -1220,7 +1168,9 @@ require('lazy').setup {
     'folke/todo-comments.nvim',
     event = 'VimEnter',
     dependencies = { 'nvim-lua/plenary.nvim' },
-    opts = { signs = false },
+    opts = {
+      signs = false,
+    },
   },
   {
     -- Better Around/Inside textobjects
@@ -1262,6 +1212,9 @@ require('lazy').setup {
       highlight = {
         enable = true,
       },
+      indent = {
+        enable = false,
+      },
     },
   },
 }
@@ -1276,10 +1229,8 @@ vim.keymap.set('n', '<leader>lg', '<CMD>lua Snacks.lazygit()<CR>', {
 vim.keymap.set('n', '<C-l>', ':w<CR>', {
   desc = 'Save file in normal mode',
 })
-vim.keymap.set('i', '<C-l>', '<C-o>:w<CR>', {
-  desc = 'Save file in insert mode',
-})
-vim.keymap.set('i', '<C-p>', '<C-o>:w<CR><Esc>', {
+
+vim.keymap.set('i', '<C-l>', '<C-o>:w<CR><Esc>', {
   desc = 'Save file and exit insert mode',
 })
 
