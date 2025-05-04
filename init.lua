@@ -46,7 +46,7 @@ vim.opt.undofile = true
 -- vim.opt.smartcase = true
 
 -- Keep signcolumn on by default
-vim.opt.signcolumn = 'yes'
+vim.opt.signcolumn = 'no'
 
 -- Decrease update time
 vim.opt.updatetime = 250
@@ -693,11 +693,6 @@ require('lazy').setup {
     'yetone/avante.nvim',
     event = 'VeryLazy',
     version = false, -- Never set this value to "*"! Never!
-    opts = {
-      claude = {
-        disable_tools = true,
-      },
-    },
     behaviour = {
       auto_apply_diff_after_generation = true,
     },
@@ -1175,6 +1170,7 @@ require('lazy').setup {
       vim.cmd.hi 'Comment gui=none'
     end,
   },
+  { 'ribru17/bamboo.nvim' },
   {
     'rebelot/kanagawa.nvim',
   },
@@ -1191,6 +1187,10 @@ require('lazy').setup {
     name = 'rose-pine',
   },
   {
+    'neanias/everforest-nvim',
+  },
+
+  {
     'navarasu/onedark.nvim',
     priority = 1000,
     opts = {
@@ -1205,9 +1205,12 @@ require('lazy').setup {
         'gruvbox',
         'tokyonight-night',
         'kanagawa',
+        'kanagawa-dragon',
         'onedark',
         'catppuccin-mocha',
         'rose-pine-main',
+        'everforest',
+        'bamboo',
       },
     },
   },
