@@ -785,6 +785,7 @@ require('lazy').setup {
   },
   {
     'saghen/blink.cmp',
+    version = '1.*',
     dependencies = {
       'Kaiser-Yang/blink-cmp-avante',
     },
@@ -1126,6 +1127,11 @@ require('lazy').setup {
   },
   'ribru17/bamboo.nvim',
   'rebelot/kanagawa.nvim',
+  {
+    'webhooked/kanso.nvim',
+    lazy = false,
+    priority = 1000,
+  },
   'neanias/everforest-nvim',
   'ellisonleao/gruvbox.nvim',
   {
@@ -1152,6 +1158,8 @@ require('lazy').setup {
       themes = {
         'gruvbox',
         'tokyonight-night',
+        'kanso-ink',
+        'kanso-zen',
         'kanagawa',
         'kanagawa-dragon',
         'onedark',
