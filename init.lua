@@ -166,17 +166,6 @@ require('lazy').setup {
     end,
   },
   {
-    'folke/lazydev.nvim',
-    ft = 'lua', -- only load on lua files
-    opts = {
-      library = {
-        -- See the configuration section for more details
-        -- Load luvit types when the `vim.uv` word is found
-        { path = '${3rd}/luv/library', words = { 'vim%.uv' } },
-      },
-    },
-  },
-  {
     'folke/trouble.nvim',
     opts = {}, -- for default options, refer to the configuration section for custom setup.
     cmd = 'Trouble',
@@ -252,7 +241,7 @@ require('lazy').setup {
       quickfile = { enabled = true },
       scope = { enabled = true },
       statuscolumn = { enabled = true },
-      words = { enabled = true },
+      -- words = { enabled = true },
       styles = {
         notification = {
           wo = {
@@ -754,23 +743,7 @@ require('lazy').setup {
   },
   -- LSP Plugins
   {
-    -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
-    -- used for completion, annotations and signatures of Neovim apis
-    'folke/lazydev.nvim',
-    ft = 'lua',
-    opts = {
-      library = {
-        -- Load luvit types when the `vim.uv` word is found
-        {
-          path = '${3rd}/luv/library',
-          words = { 'vim%.uv' },
-        },
-      },
-    },
-  },
-  {
     'L3MON4D3/LuaSnip',
-    version = '2.*',
     dependencies = {
       {
         'rafamadriz/friendly-snippets',
@@ -819,13 +792,8 @@ require('lazy').setup {
           'lsp',
           'path',
           'snippets',
-          'lazydev',
         },
         providers = {
-          lazydev = {
-            module = 'lazydev.integrations.blink',
-            score_offset = 100,
-          },
           avante = {
             module = 'blink-cmp-avante',
             name = 'Avante',
@@ -1197,6 +1165,21 @@ require('lazy').setup {
     -- - sr)'  - [S]urround [R]eplace [)] [']
     'echasnovski/mini.surround',
     opts = {},
+  },
+  {
+    'folke/noice.nvim',
+    event = 'VeryLazy',
+    opts = {
+      -- add any options here
+    },
+    dependencies = {
+      -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
+      'MunifTanjim/nui.nvim',
+      -- OPTIONAL:
+      --   `nvim-notify` is only needed, if you want to use the notification view.
+      --   If not available, we use `mini` as the fallback
+      'rcarriga/nvim-notify',
+    },
   },
   {
     'nvim-treesitter/nvim-treesitter',
