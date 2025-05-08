@@ -696,6 +696,11 @@ require('lazy').setup {
       'MunifTanjim/nui.nvim',
     },
   },
+  -- {
+  --   'kylechui/nvim-surround',
+  --   event = 'VeryLazy',
+  --   opts = {},
+  -- },
   {
     'folke/flash.nvim',
     event = 'VeryLazy',
@@ -982,24 +987,13 @@ require('lazy').setup {
         },
       }
 
-      -- Ensure the servers and tools above are installed
-      --
-      -- To check the current status of installed tools and/or manually install
-      -- other tools, you can run
-      --    :Mason
-      --
-      -- You can press `g?` for help in this menu.
-      --
-      -- `mason` had to be setup earlier: to configure its options see the
-      -- `dependencies` table for `nvim-lspconfig` above.
-      --
-      -- You can add other tools here that you want Mason to install
-      -- for you, so that they are available from within Neovim.
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
-        'stylua', -- Used to format Lua code
+        'stylua',
       })
-      require('mason-tool-installer').setup { ensure_installed = ensure_installed }
+      require('mason-tool-installer').setup {
+        ensure_installed = ensure_installed,
+      }
 
       require('mason-lspconfig').setup {
         ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
@@ -1017,8 +1011,8 @@ require('lazy').setup {
       }
     end,
   },
-
-  { -- Autoformat
+  -- Autoformat
+  {
     'stevearc/conform.nvim',
     event = { 'BufWritePre' },
     cmd = { 'ConformInfo' },
@@ -1037,26 +1031,9 @@ require('lazy').setup {
     },
     opts = {
       notify_on_error = false,
-      format_on_save = function(bufnr)
-        -- Disable "format_on_save lsp_fallback" for languages
-        -- that don't have a well standardized coding style. You
-        -- can add additional languages here or re-enable it for
-        -- the disabled ones.
-        local disable_filetypes = {
-          c = true,
-          cpp = true,
-        }
-        local lsp_format_opt
-        if disable_filetypes[vim.bo[bufnr].filetype] then
-          lsp_format_opt = 'never'
-        else
-          lsp_format_opt = 'fallback'
-        end
-        return {
-          timeout_ms = 6000,
-          lsp_format = lsp_format_opt,
-        }
-      end,
+      format_on_save = {
+        timeout_ms = 6000,
+      },
       formatters_by_ft = {
         lua = { 'stylua' },
         javascript = { 'prettier' },
@@ -1111,7 +1088,6 @@ require('lazy').setup {
     'rose-pine/neovim',
     name = 'rose-pine',
   },
-
   {
     'navarasu/onedark.nvim',
     priority = 1000,
@@ -1158,12 +1134,12 @@ require('lazy').setup {
     opts = {},
   },
   {
-    -- Add/delete/replace surroundings (brackets, quotes, etc.)
-    -- Examples:
-    -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
-    -- - sd'   - [S]urround [D]elete [']quotes
-    -- - sr)'  - [S]urround [R]eplace [)] [']
+    'MeanderingProgrammer/render-markdown.nvim',
+    opts = {},
+  },
+  {
     'echasnovski/mini.surround',
+    version = false,
     opts = {},
   },
   {
