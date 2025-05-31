@@ -66,6 +66,9 @@ vim.opt.listchars = {
   nbsp = '␣',
 }
 
+-- Danger: disable swap...they just annoy me though
+vim.opt.swapfile = false
+
 -- Preview substitutions live, as you type!
 vim.o.inccommand = 'split'
 
@@ -675,6 +678,10 @@ require('lazy').setup {
   {
     'stevearc/oil.nvim',
     opts = {
+      view_options = {
+        -- Show files and directories that start with "."
+        show_hidden = false,
+      },
       win_options = {
         signcolumn = 'yes:2',
       },
@@ -777,27 +784,9 @@ require('lazy').setup {
       },
     },
   },
-  -- LSP Plugins
-  {
-    'L3MON4D3/LuaSnip',
-    dependencies = {
-      {
-        'rafamadriz/friendly-snippets',
-        config = function()
-          require('luasnip.loaders.from_vscode').lazy_load {
-            paths = { './snippets' },
-          }
-        end,
-      },
-    },
-    opts = {},
-  },
   {
     'saghen/blink.cmp',
     version = '1.*',
-    dependencies = {
-      'Kaiser-Yang/blink-cmp-avante',
-    },
     event = 'VimEnter',
     --- @module 'blink.cmp'
     --- @type blink.cmp.Config
@@ -809,7 +798,11 @@ require('lazy').setup {
         ghost_text = {
           enabled = true,
         },
-
+        accept = {
+          auto_brackets = {
+            enabled = false,
+          },
+        },
         documentation = {
           auto_show = true,
           auto_show_delay_ms = 200,
@@ -824,22 +817,12 @@ require('lazy').setup {
 
       sources = {
         default = {
-          'avante',
           'lsp',
           'path',
           'snippets',
         },
-        providers = {
-          avante = {
-            module = 'blink-cmp-avante',
-            name = 'Avante',
-            opts = {},
-          },
-        },
       },
-      snippets = {
-        preset = 'luasnip',
-      },
+
       fuzzy = {
         implementation = 'prefer_rust_with_warning',
       },
