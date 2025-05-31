@@ -707,6 +707,7 @@ require('lazy').setup {
       mode = 'legacy',
       behaviour = {
         auto_apply_diff_after_generation = true,
+        enable_token_counting = true,
       },
     },
 

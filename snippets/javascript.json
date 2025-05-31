@@ -31,6 +31,10 @@
     "body": "// @ts-expect-error",
     "prefix": "tss"
   },
+  "ts-ignore2": {
+    "body": "{/* @ts-expect-error */}",
+    "prefix": "tsss"
+  },
   "base": {
     "body": "// eslint-disable-next-line",
     "prefix": "ddd"
