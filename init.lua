@@ -230,10 +230,10 @@ require('lazy').setup {
       'nvim-tree/nvim-web-devicons',
     },
   },
-  {
-    'youyoumu/pretty-ts-errors.nvim',
-    opts = {},
-  },
+  -- {
+  --   'youyoumu/pretty-ts-errors.nvim',
+  --   opts = {},
+  -- },
   {
     'nvzone/showkeys',
     cmd = 'ShowkeysToggle',
@@ -701,29 +701,25 @@ require('lazy').setup {
   {
     'yetone/avante.nvim',
     event = 'VeryLazy',
-    version = false, -- Never set this value to "*"! Never!
+    version = '*', -- Never set this value to "*"! Never!
     opts = {
       provider = 'claude',
-      mode = 'legacy',
+      input = {
+        provider = 'snacks',
+      },
       behaviour = {
         auto_apply_diff_after_generation = true,
-        enable_token_counting = true,
+        auto_approve_tool_permissions = true,
       },
     },
 
     build = 'make',
     dependencies = {
       'nvim-treesitter/nvim-treesitter',
-      'stevearc/dressing.nvim',
       'nvim-lua/plenary.nvim',
       'MunifTanjim/nui.nvim',
     },
   },
-  -- {
-  --   'kylechui/nvim-surround',
-  --   event = 'VeryLazy',
-  --   opts = {},
-  -- },
   {
     'folke/flash.nvim',
     event = 'VeryLazy',
