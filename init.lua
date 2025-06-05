@@ -701,13 +701,13 @@ require('lazy').setup {
   {
     'yetone/avante.nvim',
     event = 'VeryLazy',
-    version = false, -- Never set this value to "*"! Never!
+    version = '*', -- Never set this value to "*"! Never!
     opts = {
       provider = 'claude',
-      mode = 'legacy',
       behaviour = {
         auto_apply_diff_after_generation = true,
-        enable_token_counting = true,
+        auto_approve_tool_permissions = true,
+        enable_token_counting = false,
       },
     },
 
@@ -719,11 +719,6 @@ require('lazy').setup {
       'MunifTanjim/nui.nvim',
     },
   },
-  -- {
-  --   'kylechui/nvim-surround',
-  --   event = 'VeryLazy',
-  --   opts = {},
-  -- },
   {
     'folke/flash.nvim',
     event = 'VeryLazy',
