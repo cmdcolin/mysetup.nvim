@@ -272,7 +272,7 @@ require('lazy').setup {
       {
         '<leader><space>',
         function()
-          Snacks.picker.smart()
+          Snacks.picker.smart { filter = { cwd = true } }
         end,
         desc = 'Smart Find Files',
       },
@@ -694,11 +694,6 @@ require('lazy').setup {
     event = 'VeryLazy',
   },
   {
-    'echasnovski/mini.pairs',
-    version = false,
-    opts = {},
-  },
-  {
     'yetone/avante.nvim',
     event = 'VeryLazy',
     version = '*', -- Never set this value to "*"! Never!
@@ -872,7 +867,9 @@ require('lazy').setup {
 
           -- Execute a code action, usually your cursor needs to be on top of an error
           -- or a suggestion from your LSP for this to activate.
-          map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction', { 'n', 'x' })
+          vim.keymap.set('n', '<leader>ca', function()
+            require('tiny-code-action').code_action()
+          end, { noremap = true, silent = true })
 
           map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
 
@@ -1049,6 +1046,7 @@ require('lazy').setup {
       notify_on_error = false,
       format_on_save = {
         timeout_ms = 6000,
+        lsp_fallback = true,
       },
       formatters_by_ft = {
         lua = { 'stylua' },
@@ -1065,7 +1063,14 @@ require('lazy').setup {
         sh = { 'shfmt' },
         bash = { 'shfmt' },
         zsh = { 'shfmt' },
-        python = { 'ruff' },
+        python = {
+          -- To fix auto-fixable lint errors.
+          'ruff_fix',
+          -- To run the Ruff formatter.
+          'ruff_format',
+          -- To organize the imports.
+          'ruff_organize_imports',
+        },
       },
     },
   },
@@ -1176,6 +1181,25 @@ require('lazy').setup {
     },
   },
   {
+    'rachartier/tiny-code-action.nvim',
+    dependencies = {
+      { 'nvim-lua/plenary.nvim' },
+
+      -- optional picker via telescope
+      { 'nvim-telescope/telescope.nvim' },
+      -- optional picker via fzf-lua
+      { 'ibhagwan/fzf-lua' },
+      {
+        'folke/snacks.nvim',
+        opts = {
+          terminal = {},
+        },
+      },
+    },
+    event = 'LspAttach',
+    opts = {},
+  },
+  {
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
@@ -1258,4 +1282,55 @@ end, {
   noremap = true,
   silent = true,
   desc = 'Copy path to clipboard',
+})
+
+vim.keymap.set('n', 'clll', function()
+  local ts_utils = require 'nvim-treesitter.ts_utils'
+  local parsers = require 'nvim-treesitter.parsers'
+
+  if not parsers.has_parser() then
+    vim.notify('No treesitter parser available', vim.log.levels.WARN)
+    return
+  end
+
+  local node = ts_utils.get_node_at_cursor()
+  if not node then
+    vim.notify('No node at cursor', vim.log.levels.WARN)
+    return
+  end
+
+  local function_node = node
+  while function_node do
+    local node_type = function_node:type()
+    if node_type == 'function_declaration' or node_type == 'arrow_function' or node_type == 'function_expression' or node_type == 'method_definition' then
+      break
+    end
+    function_node = function_node:parent()
+  end
+
+  if not function_node then
+    vim.notify('Not inside a function', vim.log.levels.WARN)
+    return
+  end
+
+  local function_name = 'anonymous'
+  for child in function_node:iter_children() do
+    if child:type() == 'identifier' or child:type() == 'property_identifier' then
+      function_name = vim.treesitter.get_node_text(child, 0)
+      break
+    end
+  end
+
+  vim.api.nvim_feedkeys('icll', 'n', false)
+  vim.defer_fn(function()
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<Tab>', true, false, true), 'n', false)
+    vim.defer_fn(function()
+      vim.api.nvim_feedkeys('"' .. function_name .. '"', 'n', false)
+      vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<Esc>', true, false, true), 'n', false)
+    end, 50)
+  end, 50)
+end, {
+  noremap = true,
+  silent = true,
+  desc = 'Insert console.log with function name',
 })
