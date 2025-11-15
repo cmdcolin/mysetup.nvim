@@ -46,7 +46,7 @@ vim.o.undofile = true
 -- vim.o.smartcase = true
 
 -- Keep signcolumn on by default
-vim.o.signcolumn = 'no'
+vim.o.signcolumn = 'yes:2'
 
 -- Decrease update time
 vim.o.updatetime = 250
@@ -115,6 +115,14 @@ vim.keymap.set('n', '<C-h>', '<C-w><C-h>', {
 })
 vim.keymap.set('n', '<C-l>', '<C-w><C-l>', {
   desc = 'Move focus to the right window',
+})
+
+-- Save file with <leader>w (instead of <C-l> to avoid conflicts with window navigation)
+vim.keymap.set('n', '<leader>w', '<cmd>w<CR>', {
+  desc = 'Save file',
+})
+vim.keymap.set('i', '<C-s>', '<C-o>:w<CR>', {
+  desc = 'Save file in insert mode',
 })
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', {
   desc = 'Move focus to the lower window',
@@ -433,13 +441,6 @@ require('lazy').setup {
           Snacks.picker.autocmds()
         end,
         desc = 'Autocmds',
-      },
-      {
-        '<leader>sb',
-        function()
-          Snacks.picker.lines()
-        end,
-        desc = 'Buffer Lines',
       },
       {
         '<leader>sc',
@@ -1207,47 +1208,17 @@ require('lazy').setup {
 vim.keymap.set('n', '-', '<CMD>Oil<CR>', {
   desc = 'Open parent directory',
 })
-vim.keymap.set('n', '<leader>lg', '<CMD>lua Snacks.lazygit()<CR>', {
-  desc = 'Open lazygit',
-})
-
-vim.keymap.set('n', '<C-l>', ':w<CR>', {
-  desc = 'Save file in normal mode',
-})
-
-vim.keymap.set('i', '<C-l>', '<C-o>:w<CR><Esc>', {
-  desc = 'Save file and exit insert mode',
-})
 
 vim.keymap.set('n', '<leader>l', '<cmd>Lazy<cr>', {
   desc = 'Open lazy',
 })
+
 vim.keymap.set('n', '<c-w>d', vim.diagnostic.open_float, {
   desc = 'Open diagnostics',
 })
+
 vim.keymap.set('n', '<leader>aC', '<cmd>AvanteClear<cr>', {
   desc = 'Clear avante chat',
-})
-
--- Show error under cursor
-vim.keymap.set('n', '<leader>te', function()
-  require('pretty-ts-errors').show_formatted_error()
-end, {
-  desc = 'Show TS error',
-})
-
--- Show all errors in file
-vim.keymap.set('n', '<leader>tE', function()
-  require('pretty-ts-errors').open_all_errors()
-end, {
-  desc = 'Show all TS errors',
-})
-
--- Toggle auto-display
-vim.keymap.set('n', '<leader>tt', function()
-  require('pretty-ts-errors').toggle_auto_open()
-end, {
-  desc = 'Toggle TS error auto-display',
 })
 
 -- Copy path to clipboard
