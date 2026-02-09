@@ -243,7 +243,19 @@ require('lazy').setup {
       })
     end,
   },
-  'stevearc/oil.nvim',
+
+  {
+    'stevearc/oil.nvim',
+    opts = {
+      view_options = {
+        -- Show files and directories that start with "."
+        show_hidden = false,
+      },
+      win_options = {
+        signcolumn = 'yes:2',
+      },
+    },
+  },
   {
     'tronikelis/ts-autotag.nvim',
     opts = {},
@@ -537,3 +549,5 @@ end, {
   silent = true,
   desc = 'Insert console.log with function name',
 })
+
+vim.cmd 'colorscheme kanso'
