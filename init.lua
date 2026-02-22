@@ -448,10 +448,6 @@ require('lazy').setup {
     opts = {},
   },
   {
-    'MeanderingProgrammer/render-markdown.nvim',
-    opts = {},
-  },
-  {
     'echasnovski/mini.surround',
     version = false,
     opts = {},
