@@ -319,7 +319,6 @@ require('snacks').setup {
       { section = 'header' },
       { pane = 1, section = 'keys', gap = 1, padding = 1 },
       { pane = 2, section = 'recent_files', icon = ' ', title = 'Recent Files', limit = 8, indent = 2, padding = 1, cwd = true },
-      { section = 'startup' },
     },
   },
   explorer = { enabled = true },
