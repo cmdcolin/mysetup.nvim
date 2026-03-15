@@ -80,15 +80,6 @@ vim.lsp.config('lua_ls', {
   },
 })
 
-vim.api.nvim_create_autocmd('PackChanged', {
-  callback = function(ev)
-    if ev.data.name == 'nvim-treesitter' and ev.data.type ~= 'delete' then
-      vim.schedule(function()
-        vim.cmd 'TSUpdate'
-      end)
-    end
-  end,
-})
 
 vim.pack.add {
   -- Colorscheme (loaded first so it's available for vim.cmd 'colorscheme')
