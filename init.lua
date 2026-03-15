@@ -77,8 +77,6 @@ vim.pack.add {
   'https://github.com/nvim-lua/plenary.nvim',
   'https://github.com/nvim-tree/nvim-web-devicons',
   { src = 'https://github.com/saghen/blink.cmp', version = vim.version.range('1.x') },
-  'https://github.com/mason-org/mason.nvim',
-  'https://github.com/mason-org/mason-lspconfig.nvim',
   'https://github.com/neovim/nvim-lspconfig',
   'https://github.com/folke/snacks.nvim',
   'https://github.com/j-hui/fidget.nvim',
@@ -155,11 +153,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
   end,
 })
 
-require('mason').setup()
-require('mason-lspconfig').setup {
-  automatic_installation = true,
-  automatic_enable = true,
-}
+vim.lsp.enable { 'lua_ls' }
 
 require('conform').setup {
   notify_on_error = false,
