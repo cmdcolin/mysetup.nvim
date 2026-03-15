@@ -148,6 +148,12 @@ vim.pack.add {
   },
 }
 
+-- On first run vim.pack.add installs plugins after startup; skip setup until restart
+if vim.fn.finddir('snacks.nvim', vim.o.packpath) == '' then
+  vim.notify('Plugins installing — please restart Neovim when done', vim.log.levels.WARN)
+  return
+end
+
 vim.cmd 'colorscheme kanso'
 
 -- Workaround: kanso NonText is too dim on SnacksPickerListCursorLine bg
