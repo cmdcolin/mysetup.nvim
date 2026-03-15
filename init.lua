@@ -114,6 +114,7 @@ require('mini.ai').setup()
 require('mini.surround').setup()
 require('colorizer').setup()
 require('ts-autotag').setup()
+require('flash').setup { frecency = true }
 require('oil').setup {
   view_options = { show_hidden = false },
   win_options = { signcolumn = 'yes:2' },
@@ -154,7 +155,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
   end,
 })
 
-require('mason').setup { ensure_installed = { 'stylua' } }
+require('mason').setup()
 require('mason-lspconfig').setup {
   automatic_installation = true,
   automatic_enable = true,
@@ -197,8 +198,6 @@ require('which-key').setup {
   icons = { mappings = vim.g.have_nerd_font },
   spec = {
     { '<leader>s', group = '[S]earch' },
-    { '<leader>t', group = '[T]oggle' },
-    { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
   },
 }
 
