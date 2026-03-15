@@ -64,17 +64,6 @@ vim.diagnostic.config {
   },
 }
 
-local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
-if not vim.uv.fs_stat(lazypath) then
-  local lazyrepo = 'https://github.com/folke/lazy.nvim.git'
-  local out = vim.fn.system { 'git', 'clone', '--filter=blob:none', '--branch=stable', lazyrepo, lazypath }
-  if vim.v.shell_error ~= 0 then
-    error('Error cloning lazy.nvim:\n' .. out)
-  end
-end
-
-vim.opt.rtp:prepend(lazypath)
-
 vim.lsp.config('lua_ls', {
   settings = {
     Lua = {
@@ -91,409 +80,330 @@ vim.lsp.config('lua_ls', {
   },
 })
 
-require('lazy').setup {
-  {
-    'catgoose/nvim-colorizer.lua',
-    event = 'BufReadPre',
-    opts = {},
-  },
-  {
-    'folke/trouble.nvim',
-    opts = {},
-    cmd = 'Trouble',
-    keys = {
-      {
-        '<leader>xx',
-        '<cmd>Trouble diagnostics toggle<cr>',
-        desc = 'Diagnostics (Trouble)',
-      },
-    },
-  },
-  {
-    'max397574/better-escape.nvim',
-    opts = {},
-  },
-  'nvim-tree/nvim-web-devicons',
-  {
-    'folke/snacks.nvim',
-    priority = 1000,
-    lazy = false,
-    ---@type snacks.Config
-    opts = {
-      bigfile = { enabled = true },
-      dashboard = {
-        enabled = true,
-        preset = {
-          keys = {
-            { icon = ' ', key = 'r', desc = 'Recent Files', action = ':lua Snacks.picker.recent({ filter = { cwd = true } })' },
-            { icon = ' ', key = 'q', desc = 'Quit', action = ':qa' },
-          },
-        },
-        sections = {
-          { section = 'header' },
-          { pane = 1, section = 'keys', gap = 1, padding = 1 },
-          { pane = 2, section = 'recent_files', icon = ' ', title = 'Recent Files', limit = 8, indent = 2, padding = 1, cwd = true },
-          { section = 'startup' },
-        },
-      },
-      explorer = { enabled = true },
-      input = { enabled = true },
-      notifier = {
-        enabled = true,
-        timeout = 3000,
-      },
-      scroll = { enabled = true },
-      picker = {
-        enabled = true,
-        formatters = {
-          file = {
-            filename_first = true,
-          },
-        },
-      },
-      quickfile = { enabled = true },
-      scope = { enabled = true },
-      statuscolumn = { enabled = true },
-      styles = {
-        notification = {
-          wo = {
-            wrap = true,
-          },
-        },
-      },
-    },
-    keys = {
-      {
-        '<leader><space>',
-        function()
-          Snacks.picker.files()
-        end,
-        desc = 'Find Files',
-      },
+vim.api.nvim_create_autocmd('PackChanged', {
+  callback = function(ev)
+    if ev.data.name == 'nvim-treesitter' and ev.data.type ~= 'delete' then
+      vim.schedule(function()
+        vim.cmd 'TSUpdate'
+      end)
+    end
+  end,
+})
 
-      {
-        '<leader>sg',
-        function()
-          Snacks.picker.grep()
-        end,
-        desc = 'Grep',
-      },
-      {
-        '<leader>sk',
-        function()
-          Snacks.picker.keymaps()
-        end,
-        desc = 'Keymaps',
-      },
-      {
-        'gd',
-        function()
-          Snacks.picker.lsp_definitions()
-        end,
-        desc = 'Goto Definition',
-      },
-      {
-        'gD',
-        function()
-          Snacks.picker.lsp_declarations()
-        end,
-        desc = 'Goto Declaration',
-      },
-      {
-        'gr',
-        function()
-          Snacks.picker.lsp_references()
-        end,
-        nowait = true,
-        desc = 'References',
-      },
-      {
-        '<leader>gB',
-        function()
-          Snacks.gitbrowse()
-        end,
-        desc = 'Git Browse',
-        mode = { 'n', 'v' },
-      },
-    },
-    init = function()
-      vim.api.nvim_create_autocmd('User', {
-        pattern = 'VeryLazy',
+vim.pack.add {
+  -- Colorscheme (loaded first so it's available for vim.cmd 'colorscheme')
+  'https://github.com/webhooked/kanso.nvim',
+
+  -- Dependencies used by multiple plugins
+  'https://github.com/nvim-lua/plenary.nvim',
+  'https://github.com/nvim-tree/nvim-web-devicons',
+
+  -- Completion (loaded before lspconfig so capabilities are available)
+  { src = 'https://github.com/saghen/blink.cmp', version = vim.version.range('1.x') },
+
+  -- LSP stack
+  'https://github.com/mason-org/mason.nvim',
+  'https://github.com/mason-org/mason-lspconfig.nvim',
+  'https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim',
+  'https://github.com/neovim/nvim-lspconfig',
+
+  -- UI and core plugins
+  'https://github.com/folke/snacks.nvim',
+  'https://github.com/j-hui/fidget.nvim',
+  'https://github.com/folke/persistence.nvim',
+  'https://github.com/max397574/better-escape.nvim',
+  'https://github.com/echasnovski/mini.ai',
+  'https://github.com/echasnovski/mini.surround',
+'https://github.com/stevearc/oil.nvim',
+  'https://github.com/folke/which-key.nvim',
+  'https://github.com/folke/todo-comments.nvim',
+  'https://github.com/folke/trouble.nvim',
+  'https://github.com/rachartier/tiny-code-action.nvim',
+  'https://github.com/stevearc/conform.nvim',
+  'https://github.com/nvim-treesitter/nvim-treesitter',
+
+  -- Lazy-loaded: colorizer on first buffer read
+  {
+    src = 'https://github.com/catgoose/nvim-colorizer.lua',
+    load = function(name)
+      vim.api.nvim_create_autocmd('BufReadPre', {
+        once = true,
         callback = function()
-          _G.dd = function(...)
-            Snacks.debug.inspect(...)
-          end
-          _G.bt = function()
-            Snacks.debug.backtrace()
-          end
-          vim.print = _G.dd
-
-          Snacks.toggle.option('spell', { name = 'Spelling' }):map '<leader>us'
-          Snacks.toggle.option('wrap', { name = 'Wrap' }):map '<leader>uw'
-          Snacks.toggle.option('relativenumber', { name = 'Relative Number' }):map '<leader>uL'
-          Snacks.toggle.diagnostics():map '<leader>ud'
-          Snacks.toggle.line_number():map '<leader>ul'
-          Snacks.toggle.option('conceallevel', { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2 }):map '<leader>uc'
-          Snacks.toggle.treesitter():map '<leader>uT'
-          Snacks.toggle.option('background', { off = 'light', on = 'dark', name = 'Dark Background' }):map '<leader>ub'
-          Snacks.toggle.inlay_hints():map '<leader>uh'
-          Snacks.toggle.indent():map '<leader>ug'
-          Snacks.toggle.dim():map '<leader>uD'
+          vim.cmd('packadd ' .. name)
+          require('colorizer').setup()
         end,
       })
     end,
   },
 
+  -- Lazy-loaded: deferred to after startup
   {
-    'stevearc/oil.nvim',
-    opts = {
-      view_options = {
-        -- Show files and directories that start with "."
-        show_hidden = false,
-      },
-      win_options = {
-        signcolumn = 'yes:2',
-      },
-    },
-  },
-  {
-    'tronikelis/ts-autotag.nvim',
-    opts = {},
-    event = 'VeryLazy',
-  },
-
-  {
-    'folke/flash.nvim',
-    event = 'VeryLazy',
-    ---@type Flash.Config
-    opts = {
-      frecency = true,
-    },
-    keys = {
-      {
-        's',
-        mode = { 'n', 'x', 'o' },
-        function()
-          require('flash').jump()
-        end,
-        desc = 'Flash',
-      },
-    },
-  },
-  {
-    'j-hui/fidget.nvim',
-    opts = {},
-  },
-  {
-    'folke/persistence.nvim',
-    opts = {},
-  },
-  {
-    'folke/which-key.nvim',
-    event = 'VimEnter',
-    opts = {
-      delay = 0,
-      icons = {
-        mappings = vim.g.have_nerd_font,
-      },
-      spec = {
-        { '<leader>s', group = '[S]earch' },
-        { '<leader>t', group = '[T]oggle' },
-        { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
-      },
-    },
-    keys = {
-      {
-        '<leader>?',
-        function()
-          require('which-key').show { global = false }
-        end,
-        desc = 'Buffer Local Keymaps (which-key)',
-      },
-    },
-  },
-  {
-    'saghen/blink.cmp',
-    version = '1.*',
-    event = 'VimEnter',
-    --- @module 'blink.cmp'
-    --- @type blink.cmp.Config
-    opts = {
-      keymap = {
-        preset = 'super-tab',
-      },
-      completion = {
-        ghost_text = {
-          enabled = true,
-        },
-        accept = {
-          auto_brackets = {
-            enabled = false,
-          },
-        },
-        documentation = {
-          auto_show = true,
-          auto_show_delay_ms = 200,
-        },
-        list = {
-          selection = {
-            preselect = true,
-            auto_insert = true,
-          },
-        },
-      },
-
-      sources = {
-        default = {
-          'lsp',
-          'path',
-          'snippets',
-        },
-      },
-
-      fuzzy = {
-        implementation = 'prefer_rust_with_warning',
-      },
-      signature = {
-        enabled = true,
-      },
-    },
-  },
-  {
-    'mason-org/mason.nvim',
-    opts = {},
-  },
-  {
-    'neovim/nvim-lspconfig',
-    dependencies = {
-      'mason-org/mason-lspconfig.nvim',
-      'WhoIsSethDaniel/mason-tool-installer.nvim',
-      'saghen/blink.cmp',
-    },
-    config = function()
-      vim.lsp.config('*', {
-        capabilities = require('blink.cmp').get_lsp_capabilities(),
-      })
-
-      vim.api.nvim_create_autocmd('LspAttach', {
-        group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
-        callback = function(event)
-          vim.keymap.set('n', '<leader>rn', function()
-            vim.lsp.buf.rename()
-            vim.cmd 'silent! wa'
-          end, { buffer = event.buf, desc = 'LSP: [R]e[n]ame' })
-
-          vim.keymap.set('n', '<leader>ca', function()
-            require('tiny-code-action').code_action()
-          end, { buffer = event.buf, noremap = true, silent = true })
-        end,
-      })
-
-      require('mason-tool-installer').setup { ensure_installed = { 'stylua' } }
-      require('mason-lspconfig').setup {
-        ensure_installed = {},
-        automatic_installation = true,
-        automatic_enable = true,
-      }
+    src = 'https://github.com/tronikelis/ts-autotag.nvim',
+    load = function(name)
+      vim.schedule(function()
+        vim.cmd('packadd ' .. name)
+        require('ts-autotag').setup()
+      end)
     end,
   },
   {
-    'stevearc/conform.nvim',
-    event = { 'BufWritePre' },
-    cmd = { 'ConformInfo' },
-    opts = {
-      notify_on_error = false,
-      format_on_save = {
-        timeout_ms = 6000,
-        lsp_fallback = true,
+    src = 'https://github.com/folke/flash.nvim',
+    load = function(name)
+      vim.schedule(function()
+        vim.cmd('packadd ' .. name)
+        require('flash').setup { frecency = true }
+      end)
+    end,
+  },
+}
+
+vim.cmd 'colorscheme kanso'
+
+-- Workaround: kanso NonText is too dim on SnacksPickerListCursorLine bg
+vim.api.nvim_set_hl(0, 'SnacksPickerDir', { link = 'Comment' })
+
+require('better-escape').setup()
+require('mini.ai').setup()
+require('mini.surround').setup()
+require('oil').setup {
+  view_options = {
+    show_hidden = false,
+  },
+  win_options = {
+    signcolumn = 'yes:2',
+  },
+}
+require('fidget').setup()
+require('persistence').setup()
+require('todo-comments').setup { signs = false }
+require('trouble').setup()
+require('tiny-code-action').setup { picker = 'snacks' }
+
+require('blink.cmp').setup {
+  keymap = {
+    preset = 'super-tab',
+  },
+  completion = {
+    ghost_text = {
+      enabled = true,
+    },
+    accept = {
+      auto_brackets = {
+        enabled = false,
       },
-      formatters_by_ft = {
-        lua = { 'stylua' },
-        javascript = { 'prettier' },
-        javascriptreact = { 'prettier' },
-        typescript = { 'prettier' },
-        typescriptreact = { 'prettier' },
-        json = { 'prettier' },
-        markdown = { 'prettier' },
-        html = { 'prettier' },
-        css = { 'prettier' },
-        c = { 'clang-format' },
-        cpp = { 'clang-format' },
-        sh = { 'shfmt' },
-        bash = { 'shfmt' },
-        zsh = { 'shfmt' },
-        python = {
-          'ruff_fix',
-          'ruff_format',
-          'ruff_organize_imports',
-        },
+    },
+    documentation = {
+      auto_show = true,
+      auto_show_delay_ms = 200,
+    },
+    list = {
+      selection = {
+        preselect = true,
+        auto_insert = true,
       },
     },
   },
-  {
-    'webhooked/kanso.nvim',
-    lazy = false,
-    priority = 1000,
-  },
-  {
-    'folke/todo-comments.nvim',
-    event = 'VimEnter',
-    dependencies = { 'nvim-lua/plenary.nvim' },
-    opts = {
-      signs = false,
+  sources = {
+    default = {
+      'lsp',
+      'path',
+      'snippets',
     },
   },
-  {
-    'echasnovski/mini.ai',
-    opts = {},
+  fuzzy = {
+    implementation = 'prefer_rust_with_warning',
   },
-  {
-    'echasnovski/mini.surround',
-    version = false,
-    opts = {},
+  signature = {
+    enabled = true,
   },
-  {
-    'rachartier/tiny-code-action.nvim',
-    dependencies = {
-      'nvim-lua/plenary.nvim',
-      'folke/snacks.nvim',
+}
+
+vim.lsp.config('*', {
+  capabilities = require('blink.cmp').get_lsp_capabilities(),
+})
+
+vim.api.nvim_create_autocmd('LspAttach', {
+  group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
+  callback = function(event)
+    vim.keymap.set('n', '<leader>rn', function()
+      vim.lsp.buf.rename()
+      vim.cmd 'silent! wa'
+    end, { buffer = event.buf, desc = 'LSP: [R]e[n]ame' })
+
+    vim.keymap.set('n', '<leader>ca', function()
+      require('tiny-code-action').code_action()
+    end, { buffer = event.buf, noremap = true, silent = true })
+  end,
+})
+
+require('mason').setup()
+require('mason-tool-installer').setup { ensure_installed = { 'stylua' } }
+require('mason-lspconfig').setup {
+  ensure_installed = {},
+  automatic_installation = true,
+  automatic_enable = true,
+}
+
+require('conform').setup {
+  notify_on_error = false,
+  format_on_save = {
+    timeout_ms = 6000,
+    lsp_fallback = true,
+  },
+  formatters_by_ft = {
+    lua = { 'stylua' },
+    javascript = { 'prettier' },
+    javascriptreact = { 'prettier' },
+    typescript = { 'prettier' },
+    typescriptreact = { 'prettier' },
+    json = { 'prettier' },
+    markdown = { 'prettier' },
+    html = { 'prettier' },
+    css = { 'prettier' },
+    c = { 'clang-format' },
+    cpp = { 'clang-format' },
+    sh = { 'shfmt' },
+    bash = { 'shfmt' },
+    zsh = { 'shfmt' },
+    python = {
+      'ruff_fix',
+      'ruff_format',
+      'ruff_organize_imports',
     },
-    event = 'LspAttach',
-    opts = {
-      picker = 'snacks',
-    },
   },
-  {
-    'nvim-treesitter/nvim-treesitter',
-    build = ':TSUpdate',
-    main = 'nvim-treesitter.configs',
-    opts = {
-      ensure_installed = {
-        'bash',
-        'c',
-        'diff',
-        'html',
-        'lua',
-        'luadoc',
-        'markdown',
-        'markdown_inline',
-        'query',
-        'vim',
-        'vimdoc',
+}
+
+require('nvim-treesitter.configs').setup {
+  ensure_installed = {
+    'bash',
+    'c',
+    'diff',
+    'html',
+    'lua',
+    'luadoc',
+    'markdown',
+    'markdown_inline',
+    'query',
+    'vim',
+    'vimdoc',
+  },
+  auto_install = true,
+  highlight = {
+    enable = true,
+  },
+  indent = {
+    enable = false,
+  },
+}
+
+require('which-key').setup {
+  delay = 0,
+  icons = {
+    mappings = vim.g.have_nerd_font,
+  },
+  spec = {
+    { '<leader>s', group = '[S]earch' },
+    { '<leader>t', group = '[T]oggle' },
+    { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
+  },
+}
+
+require('snacks').setup {
+  bigfile = { enabled = true },
+  dashboard = {
+    enabled = true,
+    preset = {
+      keys = {
+        { icon = ' ', key = 'r', desc = 'Recent Files', action = ':lua Snacks.picker.recent({ filter = { cwd = true } })' },
+        { icon = ' ', key = 'q', desc = 'Quit', action = ':qa' },
       },
-      auto_install = true,
-      highlight = {
-        enable = true,
+    },
+    sections = {
+      { section = 'header' },
+      { pane = 1, section = 'keys', gap = 1, padding = 1 },
+      { pane = 2, section = 'recent_files', icon = ' ', title = 'Recent Files', limit = 8, indent = 2, padding = 1, cwd = true },
+      { section = 'startup' },
+    },
+  },
+  explorer = { enabled = true },
+  input = { enabled = true },
+  notifier = {
+    enabled = true,
+    timeout = 3000,
+  },
+  scroll = { enabled = true },
+  picker = {
+    enabled = true,
+    formatters = {
+      file = {
+        filename_first = true,
       },
-      indent = {
-        enable = false,
+    },
+  },
+  quickfile = { enabled = true },
+  scope = { enabled = true },
+  statuscolumn = { enabled = true },
+  styles = {
+    notification = {
+      wo = {
+        wrap = true,
       },
     },
   },
 }
 
--- Workaround: kanso NonText is too dim on SnacksPickerListCursorLine bg
-vim.api.nvim_set_hl(0, 'SnacksPickerDir', { link = 'Comment' })
+-- Deferred Snacks setup (replaces VeryLazy event from lazy.nvim)
+vim.schedule(function()
+  _G.dd = function(...)
+    Snacks.debug.inspect(...)
+  end
+  _G.bt = function()
+    Snacks.debug.backtrace()
+  end
+  vim.print = _G.dd
+
+  Snacks.toggle.option('spell', { name = 'Spelling' }):map '<leader>us'
+  Snacks.toggle.option('wrap', { name = 'Wrap' }):map '<leader>uw'
+  Snacks.toggle.option('relativenumber', { name = 'Relative Number' }):map '<leader>uL'
+  Snacks.toggle.diagnostics():map '<leader>ud'
+  Snacks.toggle.line_number():map '<leader>ul'
+  Snacks.toggle.option('conceallevel', { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2 }):map '<leader>uc'
+  Snacks.toggle.treesitter():map '<leader>uT'
+  Snacks.toggle.option('background', { off = 'light', on = 'dark', name = 'Dark Background' }):map '<leader>ub'
+  Snacks.toggle.inlay_hints():map '<leader>uh'
+  Snacks.toggle.indent():map '<leader>ug'
+  Snacks.toggle.dim():map '<leader>uD'
+end)
+
+vim.keymap.set('n', '<leader><space>', function()
+  Snacks.picker.files()
+end, { desc = 'Find Files' })
+vim.keymap.set('n', '<leader>sg', function()
+  Snacks.picker.grep()
+end, { desc = 'Grep' })
+vim.keymap.set('n', '<leader>sk', function()
+  Snacks.picker.keymaps()
+end, { desc = 'Keymaps' })
+vim.keymap.set('n', 'gd', function()
+  Snacks.picker.lsp_definitions()
+end, { desc = 'Goto Definition' })
+vim.keymap.set('n', 'gD', function()
+  Snacks.picker.lsp_declarations()
+end, { desc = 'Goto Declaration' })
+vim.keymap.set('n', 'gr', function()
+  Snacks.picker.lsp_references()
+end, { nowait = true, desc = 'References' })
+vim.keymap.set({ 'n', 'v' }, '<leader>gB', function()
+  Snacks.gitbrowse()
+end, { desc = 'Git Browse' })
+
+vim.keymap.set('n', '<leader>xx', '<cmd>Trouble diagnostics toggle<cr>', { desc = 'Diagnostics (Trouble)' })
+vim.keymap.set({ 'n', 'x', 'o' }, 's', function()
+  require('flash').jump()
+end, { desc = 'Flash' })
+vim.keymap.set('n', '<leader>?', function()
+  require('which-key').show { global = false }
+end, { desc = 'Buffer Local Keymaps (which-key)' })
 
 vim.keymap.set('n', '-', '<CMD>Oil<CR>', {
   desc = 'Open parent directory',
@@ -501,13 +411,8 @@ vim.keymap.set('n', '-', '<CMD>Oil<CR>', {
 vim.keymap.set('n', '<C-l>', ':w<CR>', {
   desc = 'Save file in normal mode',
 })
-
 vim.keymap.set('i', '<C-l>', '<C-o>:w<CR><Esc>', {
   desc = 'Save file and exit insert mode',
-})
-
-vim.keymap.set('n', '<leader>l', '<cmd>Lazy<cr>', {
-  desc = 'Open lazy',
 })
 vim.keymap.set('n', '<c-w>d', vim.diagnostic.open_float, {
   desc = 'Open diagnostics',
@@ -545,5 +450,3 @@ end, {
   silent = true,
   desc = 'Insert console.log with function name',
 })
-
-vim.cmd 'colorscheme kanso'
