@@ -149,8 +149,8 @@ vim.pack.add {
 }
 
 -- On first run vim.pack.add installs plugins after startup; skip setup until restart
-if vim.fn.finddir('snacks.nvim', vim.o.packpath) == '' then
-  vim.notify('Plugins installing — please restart Neovim when done', vim.log.levels.WARN)
+if not vim.uv.fs_stat(vim.fn.stdpath 'config' .. '/nvim-pack-lock.json') then
+  vim.notify('First run: plugins are being installed, restart when done', vim.log.levels.WARN)
   return
 end
 
