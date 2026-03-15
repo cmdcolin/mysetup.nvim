@@ -76,8 +76,7 @@ install_clangd() {
 install_lua_ls
 install_shellcheck
 install_clangd
-npm_install typescript
-npm_install typescript-language-server
+npm_install @typescript/native-preview tsgo
 npm_install bash-language-server bash-language-server
 
 echo ""

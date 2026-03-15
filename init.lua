@@ -62,6 +62,12 @@ vim.diagnostic.config {
   },
 }
 
+vim.lsp.config('tsgo', {
+  cmd = { 'tsgo', '--lsp', '--stdio' },
+  filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact' },
+  root_markers = { 'tsconfig.json', 'jsconfig.json', 'package.json', '.git' },
+})
+
 vim.lsp.config('lua_ls', {
   settings = {
     Lua = {
@@ -84,7 +90,7 @@ vim.pack.add {
   'https://github.com/max397574/better-escape.nvim',
   'https://github.com/echasnovski/mini.ai',
   'https://github.com/echasnovski/mini.surround',
-'https://github.com/stevearc/oil.nvim',
+  'https://github.com/stevearc/oil.nvim',
   'https://github.com/folke/which-key.nvim',
   'https://github.com/folke/todo-comments.nvim',
   'https://github.com/folke/trouble.nvim',
@@ -153,7 +159,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
   end,
 })
 
-vim.lsp.enable { 'lua_ls', 'ts_ls', 'ruff', 'bashls', 'clangd' }
+vim.lsp.enable { 'lua_ls', 'tsgo', 'ruff', 'bashls', 'clangd' }
 
 require('conform').setup {
   notify_on_error = false,
@@ -202,13 +208,13 @@ require('snacks').setup {
     preset = {
       keys = {
         { icon = ' ', key = 'r', desc = 'Recent Files', action = ':lua Snacks.picker.recent({ filter = { cwd = true } })' },
-        { icon = ' ', key = 'q', desc = 'Quit', action = ':qa' },
+        { icon = ' ', key = 'q', desc = 'Quit',         action = ':qa' },
       },
     },
     sections = {
       { section = 'header' },
-      { pane = 1, section = 'keys', gap = 1, padding = 1 },
-      { pane = 2, section = 'recent_files', icon = ' ', title = 'Recent Files', limit = 8, indent = 2, padding = 1, cwd = true },
+      { pane = 1,          section = 'keys',         gap = 1,    padding = 1 },
+      { pane = 2,          section = 'recent_files', icon = ' ', title = 'Recent Files', limit = 8, indent = 2, padding = 1, cwd = true },
     },
   },
   explorer = { enabled = true },
@@ -253,7 +259,8 @@ vim.keymap.set('n', 'gr', function() Snacks.picker.lsp_references() end, { nowai
 vim.keymap.set({ 'n', 'v' }, '<leader>gB', function() Snacks.gitbrowse() end, { desc = 'Git Browse' })
 vim.keymap.set('n', '<leader>xx', '<cmd>Trouble diagnostics toggle<cr>', { desc = 'Diagnostics (Trouble)' })
 vim.keymap.set({ 'n', 'x', 'o' }, 's', function() require('flash').jump() end, { desc = 'Flash' })
-vim.keymap.set('n', '<leader>?', function() require('which-key').show { global = false } end, { desc = 'Buffer Local Keymaps (which-key)' })
+vim.keymap.set('n', '<leader>?', function() require('which-key').show { global = false } end,
+  { desc = 'Buffer Local Keymaps (which-key)' })
 vim.keymap.set('n', '<leader>ll', function() vim.pack.update() end, { desc = 'Update plugins' })
 vim.keymap.set('n', '-', '<CMD>Oil<CR>', { desc = 'Open parent directory' })
 vim.keymap.set('n', '<C-l>', ':w<CR>', { desc = 'Save file in normal mode' })
