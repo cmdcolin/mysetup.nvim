@@ -49,9 +49,9 @@ install_shellcheck() {
   version=$(github_latest_tag koalaman/shellcheck)
   local tmp
   tmp=$(mktemp -d)
-  curl -fsSL "https://github.com/koalaman/shellcheck/releases/download/${version}/shellcheck-${version}.linux.x86_64.tar.xz" \
-    -o "$tmp/shellcheck.tar.xz"
-  tar -xJf "$tmp/shellcheck.tar.xz" -C "$tmp"
+  curl -fsSL "https://github.com/koalaman/shellcheck/releases/download/${version}/shellcheck-${version}.linux.x86_64.tar.gz" \
+    -o "$tmp/shellcheck.tar.gz"
+  tar -xzf "$tmp/shellcheck.tar.gz" -C "$tmp"
   cp "$tmp/shellcheck-${version}/shellcheck" "$BIN/"
   rm -rf "$tmp"
 }
@@ -63,10 +63,10 @@ install_clangd() {
   fi
   echo "installing clangd..."
   local version
-  version=$(github_latest_tag llvm/llvm-project | sed 's/llvmorg-//')
+  version=$(github_latest_tag clangd/clangd)
   local tmp
   tmp=$(mktemp -d)
-  curl -sL "https://github.com/llvm/llvm-project/releases/download/llvmorg-${version}/clangd-linux-${version}.zip" \
+  curl -fsSL "https://github.com/clangd/clangd/releases/download/${version}/clangd-linux-${version}.zip" \
     -o "$tmp/clangd.zip"
   unzip -q "$tmp/clangd.zip" -d "$tmp"
   cp "$tmp/clangd_${version}/bin/clangd" "$BIN/"
