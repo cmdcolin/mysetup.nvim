@@ -405,6 +405,10 @@ vim.keymap.set('n', '<leader>?', function()
   require('which-key').show { global = false }
 end, { desc = 'Buffer Local Keymaps (which-key)' })
 
+vim.keymap.set('n', '<leader>ll', function()
+  vim.pack.update()
+end, { desc = 'Update plugins' })
+
 vim.keymap.set('n', '-', '<CMD>Oil<CR>', {
   desc = 'Open parent directory',
 })
