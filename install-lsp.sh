@@ -77,7 +77,6 @@ install_shellcheck
 install_clangd
 npm_install typescript
 npm_install typescript-language-server
-npm_install pyright pyright-langserver
 npm_install bash-language-server bash-language-server
 
 echo ""
