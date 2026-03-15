@@ -153,7 +153,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
   end,
 })
 
-vim.lsp.enable { 'lua_ls' }
+vim.lsp.enable { 'lua_ls', 'ts_ls', 'pyright', 'bashls', 'clangd' }
 
 require('conform').setup {
   notify_on_error = false,
