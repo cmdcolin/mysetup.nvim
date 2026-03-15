@@ -159,7 +159,7 @@ vim.cmd 'colorscheme kanso'
 -- Workaround: kanso NonText is too dim on SnacksPickerListCursorLine bg
 vim.api.nvim_set_hl(0, 'SnacksPickerDir', { link = 'Comment' })
 
-require('better-escape').setup()
+require('better_escape').setup()
 require('mini.ai').setup()
 require('mini.surround').setup()
 require('oil').setup {
