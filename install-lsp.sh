@@ -49,8 +49,9 @@ install_shellcheck() {
   version=$(github_latest_tag koalaman/shellcheck)
   local tmp
   tmp=$(mktemp -d)
-  curl -sL "https://github.com/koalaman/shellcheck/releases/download/${version}/shellcheck-${version}.linux.x86_64.tar.xz" \
-    | tar -xJ -C "$tmp"
+  curl -fsSL "https://github.com/koalaman/shellcheck/releases/download/${version}/shellcheck-${version}.linux.x86_64.tar.xz" \
+    -o "$tmp/shellcheck.tar.xz"
+  tar -xJf "$tmp/shellcheck.tar.xz" -C "$tmp"
   cp "$tmp/shellcheck-${version}/shellcheck" "$BIN/"
   rm -rf "$tmp"
 }

@@ -149,7 +149,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
     end, { buffer = event.buf, desc = 'LSP: [R]e[n]ame' })
     vim.keymap.set('n', '<leader>ca', function()
       require('tiny-code-action').code_action()
-    end, { buffer = event.buf, silent = true })
+    end, { buffer = event.buf, silent = true, desc = 'LSP: Code Action' })
   end,
 })
 
@@ -157,7 +157,7 @@ vim.lsp.enable { 'lua_ls', 'ts_ls', 'ruff', 'bashls', 'clangd' }
 
 require('conform').setup {
   notify_on_error = false,
-  format_on_save = { timeout_ms = 6000, lsp_fallback = true },
+  format_on_save = { timeout_ms = 6000, lsp_format = 'fallback' },
   formatters_by_ft = {
     lua = { 'stylua' },
     javascript = { 'prettier' },
