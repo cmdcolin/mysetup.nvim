@@ -22,10 +22,27 @@ vim.opt.listchars = {
   nbsp = '␣',
 }
 vim.o.swapfile = false
--- Live preview of :s substitutions
+-- Case-insensitive searching UNLESS \C or capital in search
+vim.o.ignorecase = true
+vim.o.smartcase = true
+-- Keep signcolumn on by default
+vim.o.signcolumn = 'yes'
+-- Decrease update time
+vim.o.updatetime = 250
+-- Sets how neovim will display certain whitespace characters in the editor.
+--  See `:help 'list'`
+--  and `:help 'listchars'`
+vim.opt.list = true
+vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
+-- Preview substitutions live, as you type!
 vim.o.inccommand = 'split'
+-- Show which line your cursor is on
 vim.o.cursorline = true
+-- Minimal number of screen lines to keep above and below the cursor.
 vim.o.scrolloff = 10
+-- Configure how new splits should be opened
+vim.o.splitright = true
+vim.o.splitbelow = true
 
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, {
@@ -88,6 +105,7 @@ vim.pack.add {
   'https://github.com/j-hui/fidget.nvim',
   'https://github.com/folke/persistence.nvim',
   'https://github.com/max397574/better-escape.nvim',
+  'https://github.com/m4xshen/hardtime.nvim',
   'https://github.com/echasnovski/mini.ai',
   'https://github.com/echasnovski/mini.surround',
   'https://github.com/stevearc/oil.nvim',
@@ -128,6 +146,10 @@ require('persistence').setup()
 require('todo-comments').setup { signs = false }
 require('trouble').setup()
 require('tiny-code-action').setup { picker = 'snacks' }
+
+if vim.env.HARDMODE == 'true' then
+  require('hardtime').setup()
+end
 
 require('blink.cmp').setup {
   keymap = { preset = 'super-tab' },
@@ -262,6 +284,7 @@ vim.keymap.set({ 'n', 'x', 'o' }, 's', function() require('flash').jump() end, {
 vim.keymap.set('n', '<leader>?', function() require('which-key').show { global = false } end,
   { desc = 'Buffer Local Keymaps (which-key)' })
 vim.keymap.set('n', '<leader>ll', function() vim.pack.update() end, { desc = 'Update plugins' })
+vim.keymap.set('n', '<leader>lc', function() vim.pack.clean() end, { desc = 'Clean plugins' })
 vim.keymap.set('n', '-', '<CMD>Oil<CR>', { desc = 'Open parent directory' })
 vim.keymap.set('n', '<C-l>', ':w<CR>', { desc = 'Save file in normal mode' })
 vim.keymap.set('i', '<C-l>', '<C-o>:w<CR><Esc>', { desc = 'Save file and exit insert mode' })
