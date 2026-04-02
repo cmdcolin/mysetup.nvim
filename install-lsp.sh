@@ -3,8 +3,14 @@ set -euo pipefail
 
 BIN="$HOME/.local/bin"
 mkdir -p "$BIN"
+export PATH="$BIN:$PATH"
 
 has() { command -v "$1" &>/dev/null; }
+
+if ! has uv; then
+  echo "installing uv..."
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+fi
 
 npm_install() {
   local pkg="$1" bin="${2:-$1}"
@@ -73,11 +79,22 @@ install_clangd() {
   rm -rf "$tmp"
 }
 
+uv_tool_install() {
+  local pkg="$1" bin="${2:-$1}"
+  if has "$bin"; then
+    echo "skip: $bin already in PATH"
+  else
+    echo "installing $pkg..."
+    uv tool install --force "$pkg"
+  fi
+}
+
 install_lua_ls
 install_shellcheck
 install_clangd
 npm_install @typescript/native-preview tsgo
 npm_install bash-language-server bash-language-server
+uv_tool_install ruff
 
 echo ""
 echo "done — make sure $BIN is in your PATH"
