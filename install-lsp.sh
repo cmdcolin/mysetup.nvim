@@ -7,6 +7,17 @@ export PATH="$BIN:$PATH"
 
 has() { command -v "$1" &>/dev/null; }
 
+OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+ARCH=$(uname -m)
+case "$ARCH" in
+  arm64)         ARCH="aarch64" ;;  # macOS reports arm64, normalize to aarch64
+esac
+case "$ARCH" in
+  x86_64)        ARCH_SHORT="x64" ;;
+  aarch64)       ARCH_SHORT="arm64" ;;
+  *) echo "unsupported arch: $ARCH" >&2; exit 1 ;;
+esac
+
 if ! has uv; then
   echo "installing uv..."
   curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -36,7 +47,7 @@ install_lua_ls() {
   version=$(github_latest_tag LuaLS/lua-language-server)
   local tmp
   tmp=$(mktemp -d)
-  curl -sL "https://github.com/LuaLS/lua-language-server/releases/download/${version}/lua-language-server-${version}-linux-x64.tar.gz" \
+  curl -sL "https://github.com/LuaLS/lua-language-server/releases/download/${version}/lua-language-server-${version}-${OS}-${ARCH_SHORT}.tar.gz" \
     | tar -xz -C "$tmp"
   local dest="$HOME/.local/lib/lua-language-server"
   mkdir -p "$dest"
@@ -55,7 +66,7 @@ install_shellcheck() {
   version=$(github_latest_tag koalaman/shellcheck)
   local tmp
   tmp=$(mktemp -d)
-  curl -fsSL "https://github.com/koalaman/shellcheck/releases/download/${version}/shellcheck-${version}.linux.x86_64.tar.gz" \
+  curl -fsSL "https://github.com/koalaman/shellcheck/releases/download/${version}/shellcheck-${version}.${OS}.${ARCH}.tar.gz" \
     -o "$tmp/shellcheck.tar.gz"
   tar -xzf "$tmp/shellcheck.tar.gz" -C "$tmp"
   cp "$tmp/shellcheck-${version}/shellcheck" "$BIN/"
@@ -72,7 +83,9 @@ install_clangd() {
   version=$(github_latest_tag clangd/clangd)
   local tmp
   tmp=$(mktemp -d)
-  curl -fsSL "https://github.com/clangd/clangd/releases/download/${version}/clangd-linux-${version}.zip" \
+  local clangd_os
+  clangd_os=$([ "$OS" = "darwin" ] && echo "mac" || echo "linux")
+  curl -fsSL "https://github.com/clangd/clangd/releases/download/${version}/clangd-${clangd_os}-${version}.zip" \
     -o "$tmp/clangd.zip"
   unzip -q "$tmp/clangd.zip" -d "$tmp"
   cp "$tmp/clangd_${version}/bin/clangd" "$BIN/"
