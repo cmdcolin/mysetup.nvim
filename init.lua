@@ -1,5 +1,7 @@
 vim.g.mapleader = ' '
-vim.g.maplocalleader = ' '
+-- Backslash, not <space>: vimtex hangs all its maps off <localleader>l*, which
+-- would collide with <leader>ll / <leader>lc (plugin update/clean) below.
+vim.g.maplocalleader = '\\'
 vim.g.have_nerd_font = true
 
 vim.o.number = true
@@ -81,7 +83,7 @@ vim.diagnostic.config {
 
 vim.lsp.config('tsgo', {
   cmd = { 'tsgo', '--lsp', '--stdio' },
-  filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact' },
+  filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'astro' },
   root_markers = { 'tsconfig.json', 'jsconfig.json', 'package.json', '.git' },
 })
 
@@ -95,7 +97,46 @@ vim.lsp.config('lua_ls', {
   },
 })
 
+vim.lsp.config('texlab', {
+  settings = {
+    texlab = {
+      -- vimtex owns compilation (latexmk -pvc); texlab must not race it
+      build = { onSave = false },
+      chktex = { onOpenAndSave = true, onEdit = false },
+      diagnosticsDelay = 300,
+    },
+  },
+})
+
+-- LaTeX. These must be set before vimtex loads.
+-- Preview loop: `\ll` starts `latexmk -pvc`, which watches the .tex on DISK --
+-- so edits from Claude (or any external tool) recompile too, not just :w from
+-- this buffer. Papers auto-reloads the PDF via an inotify watch on its dir.
+vim.g.vimtex_view_method = 'general'
+vim.g.vimtex_view_general_viewer = 'papers'
+vim.g.vimtex_view_general_options = '@pdf'
+-- Open the viewer automatically after the first successful compile
+vim.g.vimtex_view_automatic = 1
+vim.g.vimtex_compiler_method = 'latexmk'
+vim.g.vimtex_compiler_latexmk = {
+  continuous = 1,
+  options = {
+    '-verbose',
+    '-file-line-error',
+    '-synctex=1',
+    '-interaction=nonstopmode',
+  },
+}
+-- Show the quickfix list on real errors, but keep the cursor in the tex buffer,
+-- and don't let Overfull \hbox warnings hijack the screen.
+vim.g.vimtex_quickfix_mode = 2
+vim.g.vimtex_quickfix_open_on_warning = 0
+-- Papers 50.x dropped SyncTeX support upstream, so forward/inverse search is
+-- unavailable with this viewer; don't let vimtex advertise it.
+vim.g.vimtex_view_forward_search_on_start = 0
+
 vim.pack.add {
+  'https://github.com/lervag/vimtex',
   'https://github.com/webhooked/kanso.nvim',
   'https://github.com/nvim-lua/plenary.nvim',
   'https://github.com/nvim-tree/nvim-web-devicons',
@@ -159,7 +200,16 @@ require('blink.cmp').setup {
     documentation = { auto_show = true, auto_show_delay_ms = 200 },
     list = { selection = { preselect = true, auto_insert = true } },
   },
-  sources = { default = { 'lsp', 'path', 'snippets' } },
+  sources = {
+    default = { 'lsp', 'path', 'snippets' },
+    -- Prose: complete against words already in the document, so long
+    -- \label{} / \cite{} keys and repeated terminology are one Tab away
+    per_filetype = {
+      tex = { 'lsp', 'snippets', 'buffer', 'path' },
+      plaintex = { 'lsp', 'snippets', 'buffer', 'path' },
+      bib = { 'lsp', 'buffer', 'path' },
+    },
+  },
   fuzzy = { implementation = 'prefer_rust_with_warning' },
   signature = { enabled = true },
 }
@@ -181,7 +231,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
   end,
 })
 
-vim.lsp.enable { 'lua_ls', 'tsgo', 'ruff', 'bashls', 'clangd' }
+vim.lsp.enable { 'lua_ls', 'tsgo', 'ruff', 'bashls', 'clangd', 'texlab' }
 
 require('conform').setup {
   notify_on_error = false,
@@ -189,6 +239,7 @@ require('conform').setup {
   formatters_by_ft = {
     lua = { 'stylua' },
     javascript = { 'prettier' },
+    astro = { 'prettier' },
     javascriptreact = { 'prettier' },
     typescript = { 'prettier' },
     typescriptreact = { 'prettier' },
@@ -202,6 +253,9 @@ require('conform').setup {
     bash = { 'shfmt' },
     zsh = { 'shfmt' },
     python = { 'ruff_fix', 'ruff_format', 'ruff_organize_imports' },
+    tex = { 'tex-fmt' },
+    plaintex = { 'tex-fmt' },
+    bib = { 'tex-fmt' },
   },
 }
 
@@ -220,6 +274,7 @@ require('which-key').setup {
   icons = { mappings = vim.g.have_nerd_font },
   spec = {
     { '<leader>s', group = '[S]earch' },
+    { '<localleader>l', group = 'La[T]eX', mode = { 'n', 'x' } },
   },
 }
 
@@ -271,6 +326,66 @@ vim.schedule(function()
   Snacks.toggle.indent():map '<leader>ug'
   Snacks.toggle.dim():map '<leader>uD'
 end)
+
+-- Reload buffers changed on disk by another process (Claude editing the .tex
+-- while it is open here). 'autoread' only fires on certain events, so poke it.
+vim.o.autoread = true
+vim.api.nvim_create_autocmd({ 'FocusGained', 'BufEnter', 'CursorHold', 'CursorHoldI', 'TermLeave' }, {
+  group = vim.api.nvim_create_augroup('checktime-external-edits', { clear = true }),
+  callback = function()
+    if vim.o.buftype == '' and vim.api.nvim_buf_get_name(0) ~= '' and vim.fn.mode() ~= 'c' then
+      vim.cmd 'silent! checktime'
+    end
+  end,
+})
+vim.api.nvim_create_autocmd('FileChangedShellPost', {
+  group = vim.api.nvim_create_augroup('checktime-notify', { clear = true }),
+  callback = function()
+    vim.notify('Buffer reloaded (changed on disk)', vim.log.levels.INFO)
+  end,
+})
+
+-- Open a .tex, get a live PDF. No keys to press: compile starts on open and
+-- Papers opens itself once the first build lands. vimtex#compiler#start is a
+-- no-op if a compiler is already running for this project.
+vim.api.nvim_create_autocmd('User', {
+  pattern = 'VimtexEventInitPost',
+  group = vim.api.nvim_create_augroup('latex-autopreview', { clear = true }),
+  callback = function()
+    local function vimtex(expr)
+      local ok, val = pcall(vim.fn.eval, 'b:vimtex.' .. expr)
+      -- these predicates come back as v:true/v:false, i.e. Lua booleans
+      return ok and (val == true or val == 1)
+    end
+    -- Skip \input fragments and anything whose main file can't be resolved
+    if not vimtex 'is_compileable()' or vimtex 'compiler.is_running()' then
+      return
+    end
+    vim.fn['vimtex#compiler#start']()
+  end,
+})
+
+-- Prose-oriented settings for LaTeX buffers
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = { 'tex', 'plaintex', 'bib' },
+  group = vim.api.nvim_create_augroup('latex-prose', { clear = true }),
+  callback = function(event)
+    vim.opt_local.spell = true
+    vim.opt_local.spelllang = 'en_us'
+    vim.opt_local.wrap = true
+    vim.opt_local.linebreak = true
+    vim.opt_local.breakindent = true
+    -- vimtex conceals math/accents so the source reads closer to the output;
+    -- toggle it off with <leader>uc when you need to see the raw markup
+    vim.opt_local.conceallevel = 2
+    -- Wrapped lines: j/k should move by screen line, not logical line
+    local opts = { buffer = event.buf, expr = true, silent = true }
+    vim.keymap.set({ 'n', 'x' }, 'j', "v:count == 0 ? 'gj' : 'j'", opts)
+    vim.keymap.set({ 'n', 'x' }, 'k', "v:count == 0 ? 'gk' : 'k'", opts)
+    -- Spelling suggestions for the word under the cursor (zg adds to dictionary)
+    vim.keymap.set('n', '<leader>z', 'z=', { buffer = event.buf, desc = 'Spelling suggestions' })
+  end,
+})
 
 vim.keymap.set('n', '<leader><space>', function() Snacks.picker.files() end, { desc = 'Find Files' })
 vim.keymap.set('n', '<leader>sg', function() Snacks.picker.grep() end, { desc = 'Grep' })

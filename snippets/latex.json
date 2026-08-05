@@ -1,0 +1,147 @@
+{
+  "document skeleton": {
+    "prefix": "art",
+    "description": "Full article skeleton",
+    "body": [
+      "\\documentclass[11pt]{article}",
+      "\\usepackage[utf8]{inputenc}",
+      "\\usepackage[margin=1in]{geometry}",
+      "\\usepackage{amsmath, amssymb}",
+      "\\usepackage{graphicx}",
+      "\\usepackage{hyperref}",
+      "",
+      "\\title{${1:Title}}",
+      "\\author{${2:Colin}}",
+      "\\date{\\today}",
+      "",
+      "\\begin{document}",
+      "\\maketitle",
+      "",
+      "$0",
+      "",
+      "\\end{document}"
+    ]
+  },
+  "section": {
+    "prefix": "sec",
+    "body": ["\\section{${1:name}}", "$0"]
+  },
+  "subsection": {
+    "prefix": "ssec",
+    "body": ["\\subsection{${1:name}}", "$0"]
+  },
+  "subsubsection": {
+    "prefix": "sssec",
+    "body": ["\\subsubsection{${1:name}}", "$0"]
+  },
+  "generic environment": {
+    "prefix": "beg",
+    "description": "\\begin{} ... \\end{}",
+    "body": ["\\begin{${1:env}}", "\t$0", "\\end{${1:env}}"]
+  },
+  "itemize": {
+    "prefix": "item",
+    "description": "Bulleted list",
+    "body": ["\\begin{itemize}", "\t\\item $0", "\\end{itemize}"]
+  },
+  "enumerate": {
+    "prefix": "enum",
+    "description": "Numbered list",
+    "body": ["\\begin{enumerate}", "\t\\item $0", "\\end{enumerate}"]
+  },
+  "figure": {
+    "prefix": "fig",
+    "description": "Figure with caption and label",
+    "body": [
+      "\\begin{figure}[htbp]",
+      "\t\\centering",
+      "\t\\includegraphics[width=${1:0.8}\\textwidth]{${2:path}}",
+      "\t\\caption{${3:caption}}",
+      "\t\\label{fig:${4:label}}",
+      "\\end{figure}",
+      "$0"
+    ]
+  },
+  "table": {
+    "prefix": "tab",
+    "description": "Table with caption and label",
+    "body": [
+      "\\begin{table}[htbp]",
+      "\t\\centering",
+      "\t\\begin{tabular}{${1:l l}}",
+      "\t\t\\hline",
+      "\t\t${2:A} & ${3:B} \\\\\\\\",
+      "\t\t\\hline",
+      "\t\t$0 & \\\\\\\\",
+      "\t\t\\hline",
+      "\t\\end{tabular}",
+      "\t\\caption{${4:caption}}",
+      "\t\\label{tab:${5:label}}",
+      "\\end{table}"
+    ]
+  },
+  "equation": {
+    "prefix": "eq",
+    "description": "Numbered display equation",
+    "body": ["\\begin{equation}", "\t${1:x = y}", "\t\\label{eq:${2:label}}", "\\end{equation}", "$0"]
+  },
+  "align": {
+    "prefix": "ali",
+    "description": "Multi-line aligned equations",
+    "body": ["\\begin{align}", "\t${1:a} &= ${2:b} \\\\\\\\", "\t$0", "\\end{align}"]
+  },
+  "unnumbered equation": {
+    "prefix": "eqs",
+    "description": "Display math, no number",
+    "body": ["\\[", "\t$0", "\\]"]
+  },
+  "fraction": {
+    "prefix": "frac",
+    "body": ["\\frac{${1:num}}{${2:den}}$0"]
+  },
+  "verbatim code": {
+    "prefix": "code",
+    "body": ["\\begin{verbatim}", "$0", "\\end{verbatim}"]
+  },
+  "label": {
+    "prefix": "lab",
+    "body": ["\\label{${1:sec}:${2:name}}$0"]
+  },
+  "reference": {
+    "prefix": "ref",
+    "body": ["\\ref{$1}$0"]
+  },
+  "citation": {
+    "prefix": "cite",
+    "body": ["\\cite{$1}$0"]
+  },
+  "footnote": {
+    "prefix": "fn",
+    "body": ["\\footnote{$1}$0"]
+  },
+  "bold": {
+    "prefix": "bf",
+    "body": ["\\textbf{$1}$0"]
+  },
+  "italic": {
+    "prefix": "it",
+    "body": ["\\textit{$1}$0"]
+  },
+  "monospace": {
+    "prefix": "tt",
+    "body": ["\\texttt{$1}$0"]
+  },
+  "hyperlink": {
+    "prefix": "href",
+    "body": ["\\href{${1:url}}{${2:text}}$0"]
+  },
+  "url": {
+    "prefix": "url",
+    "body": ["\\url{$1}$0"]
+  },
+  "bibliography": {
+    "prefix": "bib",
+    "description": "biblatex setup + printbibliography",
+    "body": ["\\usepackage[backend=biber, style=${1:numeric}]{biblatex}", "\\addbibresource{${2:refs.bib}}", "$0"]
+  }
+}
