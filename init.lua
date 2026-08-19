@@ -233,16 +233,18 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
 vim.lsp.enable { 'lua_ls', 'tsgo', 'ruff', 'bashls', 'clangd', 'texlab' }
 
+local js = { 'oxfmt', 'prettier', stop_after_first = true }
+
 require('conform').setup {
   notify_on_error = false,
   format_on_save = { timeout_ms = 6000, lsp_format = 'fallback' },
   formatters_by_ft = {
     lua = { 'stylua' },
-    javascript = { 'prettier' },
+    javascript = js,
     astro = { 'prettier' },
-    javascriptreact = { 'prettier' },
-    typescript = { 'prettier' },
-    typescriptreact = { 'prettier' },
+    javascriptreact = js,
+    typescript = js,
+    typescriptreact = js,
     json = { 'prettier' },
     markdown = { 'prettier' },
     html = { 'prettier' },
