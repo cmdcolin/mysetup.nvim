@@ -37,9 +37,6 @@ vim.o.splitright = true
 vim.o.splitbelow = true
 
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
-vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, {
-  desc = 'Open diagnostic [Q]uickfix list',
-})
 vim.api.nvim_create_autocmd('TextYankPost', {
   desc = 'Highlight when yanking (copying) text',
   group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
@@ -77,6 +74,12 @@ vim.lsp.config('tsgo', {
   root_markers = { 'tsconfig.json', 'jsconfig.json', 'package.json', '.git' },
 })
 
+vim.lsp.config('ruff', {
+  cmd = { 'ruff', 'server' },
+  filetypes = { 'python' },
+  root_markers = { 'pyproject.toml', 'ruff.toml', '.ruff.toml', '.git' },
+})
+
 vim.lsp.config('lua_ls', {
   settings = {
     Lua = {
@@ -91,7 +94,6 @@ vim.pack.add {
   'https://github.com/webhooked/kanso.nvim',
   'https://github.com/nvim-tree/nvim-web-devicons',
   { src = 'https://github.com/saghen/blink.cmp', version = vim.version.range('1.x') },
-  'https://github.com/neovim/nvim-lspconfig',
   'https://github.com/folke/snacks.nvim',
   'https://github.com/echasnovski/mini.ai',
   'https://github.com/echasnovski/mini.surround',
@@ -151,7 +153,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
   end,
 })
 
-vim.lsp.enable { 'lua_ls', 'tsgo', 'ruff', 'bashls', 'clangd' }
+vim.lsp.enable { 'lua_ls', 'tsgo', 'ruff' }
 
 local js = { 'oxfmt', 'prettier', stop_after_first = true }
 
@@ -169,8 +171,6 @@ require('conform').setup {
     markdown = { 'prettier' },
     html = { 'prettier' },
     css = { 'prettier' },
-    c = { 'clang-format' },
-    cpp = { 'clang-format' },
     sh = { 'shfmt' },
     bash = { 'shfmt' },
     zsh = { 'shfmt' },
@@ -180,8 +180,7 @@ require('conform').setup {
 
 require('nvim-treesitter').setup {
   ensure_installed = {
-    'bash', 'c', 'diff', 'html', 'lua', 'luadoc',
-    'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc',
+    'bash', 'html', 'lua', 'markdown', 'markdown_inline', 'vim', 'vimdoc',
   },
   auto_install = true,
   highlight = { enable = true },
@@ -212,37 +211,18 @@ require('snacks').setup {
       { pane = 2,          section = 'recent_files', icon = ' ', title = 'Recent Files', limit = 8, indent = 2, padding = 1, cwd = true },
     },
   },
-  explorer = { enabled = true },
   input = { enabled = true },
   notifier = { enabled = true, timeout = 3000 },
-  scroll = { enabled = true },
   picker = { enabled = true, formatters = { file = { filename_first = true } } },
   quickfile = { enabled = true },
-  scope = { enabled = true },
   statuscolumn = { enabled = true },
   styles = { notification = { wo = { wrap = true } } },
 }
 
 vim.schedule(function()
-  _G.dd = function(...)
-    Snacks.debug.inspect(...)
-  end
-  _G.bt = function()
-    Snacks.debug.backtrace()
-  end
-  vim.print = _G.dd
-
   Snacks.toggle.option('spell', { name = 'Spelling' }):map '<leader>us'
   Snacks.toggle.option('wrap', { name = 'Wrap' }):map '<leader>uw'
-  Snacks.toggle.option('relativenumber', { name = 'Relative Number' }):map '<leader>uL'
   Snacks.toggle.diagnostics():map '<leader>ud'
-  Snacks.toggle.line_number():map '<leader>ul'
-  Snacks.toggle.option('conceallevel', { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2 }):map '<leader>uc'
-  Snacks.toggle.treesitter():map '<leader>uT'
-  Snacks.toggle.option('background', { off = 'light', on = 'dark', name = 'Dark Background' }):map '<leader>ub'
-  Snacks.toggle.inlay_hints():map '<leader>uh'
-  Snacks.toggle.indent():map '<leader>ug'
-  Snacks.toggle.dim():map '<leader>uD'
 end)
 
 -- Reload buffers changed on disk by another process (Claude editing a file
@@ -270,7 +250,6 @@ vim.keymap.set('n', 'gd', function() Snacks.picker.lsp_definitions() end, { desc
 vim.keymap.set('n', 'gD', function() Snacks.picker.lsp_declarations() end, { desc = 'Goto Declaration' })
 vim.keymap.set('n', 'gr', function() Snacks.picker.lsp_references() end, { nowait = true, desc = 'References' })
 vim.keymap.set({ 'n', 'v' }, '<leader>gB', function() Snacks.gitbrowse() end, { desc = 'Git Browse' })
-vim.keymap.set('n', '<leader>xx', function() Snacks.picker.diagnostics() end, { desc = 'Diagnostics' })
 vim.keymap.set({ 'n', 'x', 'o' }, 's', function() require('flash').jump() end, { desc = 'Flash' })
 vim.keymap.set('n', '<leader>?', function() require('which-key').show { global = false } end,
   { desc = 'Buffer Local Keymaps (which-key)' })

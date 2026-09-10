@@ -3,18 +3,6 @@
     "snippets": [
       {
         "language": [
-          "java"
-        ],
-        "path": "./java.json"
-      },
-      {
-        "language": [
-          "rust"
-        ],
-        "path": "./rust.json"
-      },
-      {
-        "language": [
           "javascript",
           "typescript",
           "typescriptreact",

@@ -73,25 +73,6 @@ install_shellcheck() {
   rm -rf "$tmp"
 }
 
-install_clangd() {
-  if has clangd; then
-    echo "skip: clangd already in PATH"
-    return
-  fi
-  echo "installing clangd..."
-  local version
-  version=$(github_latest_tag clangd/clangd)
-  local tmp
-  tmp=$(mktemp -d)
-  local clangd_os
-  clangd_os=$([ "$OS" = "darwin" ] && echo "mac" || echo "linux")
-  curl -fsSL "https://github.com/clangd/clangd/releases/download/${version}/clangd-${clangd_os}-${version}.zip" \
-    -o "$tmp/clangd.zip"
-  unzip -q "$tmp/clangd.zip" -d "$tmp"
-  cp "$tmp/clangd_${version}/bin/clangd" "$BIN/"
-  rm -rf "$tmp"
-}
-
 uv_tool_install() {
   local pkg="$1" bin="${2:-$1}"
   if has "$bin"; then
@@ -104,9 +85,7 @@ uv_tool_install() {
 
 install_lua_ls
 install_shellcheck
-install_clangd
 npm_install @typescript/native-preview tsgo
-npm_install bash-language-server bash-language-server
 uv_tool_install ruff
 
 echo ""

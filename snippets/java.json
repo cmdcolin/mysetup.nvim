@@ -1,6 +1,0 @@
-{
-  "console.log": {
-    "body": ["System.out.println($1)"],
-    "prefix": "cll"
-  }
-}
