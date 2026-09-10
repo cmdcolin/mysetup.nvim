@@ -92,50 +92,6 @@ install_clangd() {
   rm -rf "$tmp"
 }
 
-install_tarball_bin() {
-  # install_tarball_bin <repo> <binary>
-  # Both texlab and tex-fmt publish assets named <bin>-<arch>-<os>.tar.gz
-  local repo="$1" bin="$2"
-  if has "$bin"; then
-    echo "skip: $bin already in PATH"
-    return
-  fi
-  echo "installing $bin..."
-  local rel_os
-  rel_os=$([ "$OS" = "darwin" ] && echo "macos" || echo "linux")
-  local version tmp
-  version=$(github_latest_tag "$repo")
-  tmp=$(mktemp -d)
-  curl -fsSL "https://github.com/${repo}/releases/download/${version}/${bin}-${ARCH}-${rel_os}.tar.gz" \
-    | tar -xz -C "$tmp"
-  find "$tmp" -type f -name "$bin" -exec cp {} "$BIN/" \;
-  chmod +x "$BIN/$bin"
-  rm -rf "$tmp"
-}
-
-install_latex() {
-  # TeX toolchain: latexmk drives continuous compilation, chktex backs texlab's
-  # linting, biber handles biblatex bibliographies.
-  if [ "$OS" = "darwin" ]; then
-    if ! has latexmk; then
-      echo "latexmk missing — install MacTeX (brew install --cask mactex-no-gui) then rerun" >&2
-    fi
-    return
-  fi
-  local missing=()
-  has latexmk || missing+=(latexmk)
-  has chktex || missing+=(chktex)
-  has biber || missing+=(biber)
-  kpsewhich biblatex.sty >/dev/null 2>&1 || missing+=(texlive-bibtex-extra)
-  has pdflatex || missing+=(texlive-latex-recommended texlive-latex-extra texlive-science)
-  if [ ${#missing[@]} -eq 0 ]; then
-    echo "skip: latex toolchain already present"
-    return
-  fi
-  echo "installing latex toolchain: ${missing[*]}"
-  sudo apt-get install -y "${missing[@]}"
-}
-
 uv_tool_install() {
   local pkg="$1" bin="${2:-$1}"
   if has "$bin"; then
@@ -149,9 +105,6 @@ uv_tool_install() {
 install_lua_ls
 install_shellcheck
 install_clangd
-install_latex
-install_tarball_bin latex-lsp/texlab texlab
-install_tarball_bin WGUNDERWOOD/tex-fmt tex-fmt
 npm_install @typescript/native-preview tsgo
 npm_install bash-language-server bash-language-server
 uv_tool_install ruff

@@ -15,14 +15,6 @@
       },
       {
         "language": [
-          "tex",
-          "plaintex",
-          "latex"
-        ],
-        "path": "./latex.json"
-      },
-      {
-        "language": [
           "javascript",
           "typescript",
           "typescriptreact",
