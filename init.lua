@@ -275,7 +275,14 @@ vim.keymap.set({ 'n', 'x', 'o' }, 's', function() require('flash').jump() end, {
 vim.keymap.set('n', '<leader>?', function() require('which-key').show { global = false } end,
   { desc = 'Buffer Local Keymaps (which-key)' })
 vim.keymap.set('n', '<leader>ll', function() vim.pack.update() end, { desc = 'Update plugins' })
-vim.keymap.set('n', '<leader>lc', function() vim.pack.clean() end, { desc = 'Clean plugins' })
+vim.keymap.set('n', '<leader>lc', function()
+  local stale = vim.tbl_map(function(p) return p.spec.name end,
+    vim.tbl_filter(function(p) return not p.active end, vim.pack.get()))
+  if #stale == 0 then
+    return vim.notify 'No stale plugins'
+  end
+  vim.pack.del(stale)
+end, { desc = 'Clean plugins' })
 vim.keymap.set('n', '-', '<CMD>Oil<CR>', { desc = 'Open parent directory' })
 vim.keymap.set('n', '<C-l>', ':w<CR>', { desc = 'Save file in normal mode' })
 vim.keymap.set('i', '<C-l>', '<C-o>:w<CR><Esc>', { desc = 'Save file and exit insert mode' })
