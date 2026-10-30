@@ -68,28 +68,6 @@ vim.diagnostic.config {
   },
 }
 
-vim.lsp.config('tsgo', {
-  cmd = { 'tsgo', '--lsp', '--stdio' },
-  filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'astro' },
-  root_markers = { 'tsconfig.json', 'jsconfig.json', 'package.json', '.git' },
-})
-
-vim.lsp.config('ruff', {
-  cmd = { 'ruff', 'server' },
-  filetypes = { 'python' },
-  root_markers = { 'pyproject.toml', 'ruff.toml', '.ruff.toml', '.git' },
-})
-
-vim.lsp.config('lua_ls', {
-  settings = {
-    Lua = {
-      runtime = { version = 'LuaJIT' },
-      diagnostics = { globals = { 'vim', 'Snacks' } },
-      workspace = { checkThirdParty = false },
-    },
-  },
-})
-
 vim.pack.add {
   'https://github.com/webhooked/kanso.nvim',
   'https://github.com/nvim-tree/nvim-web-devicons',
@@ -176,14 +154,15 @@ require('conform').setup {
   },
 }
 
-require('nvim-treesitter').setup {
-  ensure_installed = {
-    'bash', 'html', 'lua', 'markdown', 'markdown_inline', 'vim', 'vimdoc',
-  },
-  auto_install = true,
-  highlight = { enable = true },
-  indent = { enable = false },
+require('nvim-treesitter').install {
+  'bash', 'css', 'html', 'javascript', 'json', 'python', 'tsx', 'typescript',
 }
+vim.api.nvim_create_autocmd('FileType', {
+  group = vim.api.nvim_create_augroup('treesitter-start', { clear = true }),
+  callback = function(ev)
+    pcall(vim.treesitter.start, ev.buf)
+  end,
+})
 
 require('which-key').setup {
   delay = 0,
@@ -246,7 +225,7 @@ vim.keymap.set('n', '<leader>sg', function() Snacks.picker.grep() end, { desc = 
 vim.keymap.set('n', '<leader>sk', function() Snacks.picker.keymaps() end, { desc = 'Keymaps' })
 vim.keymap.set('n', 'gd', function() Snacks.picker.lsp_definitions() end, { desc = 'Goto Definition' })
 vim.keymap.set('n', 'gD', function() Snacks.picker.lsp_declarations() end, { desc = 'Goto Declaration' })
-vim.keymap.set('n', 'gr', function() Snacks.picker.lsp_references() end, { nowait = true, desc = 'References' })
+vim.keymap.set('n', 'grr', function() Snacks.picker.lsp_references() end, { desc = 'References' })
 vim.keymap.set({ 'n', 'v' }, '<leader>gB', function() Snacks.gitbrowse() end, { desc = 'Git Browse' })
 vim.keymap.set('n', '<leader>?', function() require('which-key').show { global = false } end,
   { desc = 'Buffer Local Keymaps (which-key)' })
