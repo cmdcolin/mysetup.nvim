@@ -101,7 +101,6 @@ vim.pack.add {
   'https://github.com/folke/which-key.nvim',
   'https://github.com/stevearc/conform.nvim',
   'https://github.com/nvim-treesitter/nvim-treesitter',
-  'https://github.com/folke/flash.nvim',
 }
 
 -- On first run vim.pack.add installs plugins after startup; skip setup until restart
@@ -117,7 +116,6 @@ vim.api.nvim_set_hl(0, 'SnacksPickerDir', { link = 'Comment' })
 
 require('mini.ai').setup()
 require('mini.surround').setup()
-require('flash').setup { frecency = true }
 require('oil').setup {
   view_options = { show_hidden = false },
   win_options = { signcolumn = 'yes:2' },
@@ -250,7 +248,6 @@ vim.keymap.set('n', 'gd', function() Snacks.picker.lsp_definitions() end, { desc
 vim.keymap.set('n', 'gD', function() Snacks.picker.lsp_declarations() end, { desc = 'Goto Declaration' })
 vim.keymap.set('n', 'gr', function() Snacks.picker.lsp_references() end, { nowait = true, desc = 'References' })
 vim.keymap.set({ 'n', 'v' }, '<leader>gB', function() Snacks.gitbrowse() end, { desc = 'Git Browse' })
-vim.keymap.set({ 'n', 'x', 'o' }, 's', function() require('flash').jump() end, { desc = 'Flash' })
 vim.keymap.set('n', '<leader>?', function() require('which-key').show { global = false } end,
   { desc = 'Buffer Local Keymaps (which-key)' })
 vim.keymap.set('n', '<leader>ll', function() vim.pack.update() end, { desc = 'Update plugins' })
