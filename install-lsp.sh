@@ -60,23 +60,6 @@ install_lua_ls() {
   rm -rf "$tmp"
 }
 
-install_shellcheck() {
-  if has shellcheck; then
-    echo "skip: shellcheck already in PATH"
-    return
-  fi
-  echo "installing shellcheck..."
-  local version
-  version=$(github_latest_tag koalaman/shellcheck)
-  local tmp
-  tmp=$(mktemp -d)
-  curl -fsSL "https://github.com/koalaman/shellcheck/releases/download/${version}/shellcheck-${version}.${OS}.${ARCH}.tar.gz" \
-    -o "$tmp/shellcheck.tar.gz"
-  tar -xzf "$tmp/shellcheck.tar.gz" -C "$tmp"
-  cp "$tmp/shellcheck-${version}/shellcheck" "$BIN/"
-  rm -rf "$tmp"
-}
-
 install_tree_sitter() {
   if has tree-sitter; then
     echo "skip: tree-sitter already in PATH"
@@ -114,7 +97,6 @@ uv_tool_install() {
 }
 
 install_lua_ls
-install_shellcheck
 install_tree_sitter
 install_stylua
 npm_install @typescript/native-preview tsgo
