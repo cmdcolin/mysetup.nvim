@@ -38,6 +38,7 @@ vim.pack.add {
   'https://github.com/webhooked/kanso.nvim',
   'https://github.com/nvim-tree/nvim-web-devicons',
   'https://github.com/folke/snacks.nvim',
+  'https://github.com/stevearc/oil.nvim',
   'https://github.com/folke/which-key.nvim',
   'https://github.com/stevearc/conform.nvim',
   'https://github.com/nvim-treesitter/nvim-treesitter',
@@ -46,6 +47,11 @@ vim.pack.add {
 vim.cmd 'colorscheme kanso'
 -- kanso's NonText is too dim on SnacksPickerListCursorLine bg
 vim.api.nvim_set_hl(0, 'SnacksPickerDir', { link = 'Comment' })
+
+require('oil').setup {
+  view_options = { show_hidden = false },
+  win_options = { signcolumn = 'yes:2' },
+}
 
 vim.lsp.enable { 'lua_ls', 'tsgo', 'ruff' }
 
@@ -94,7 +100,6 @@ require('snacks').setup {
       { pane = 2, section = 'recent_files', icon = ' ', title = 'Recent Files', limit = 8, indent = 2, padding = 1, cwd = true },
     },
   },
-  explorer = { enabled = true },
   picker = { enabled = true, formatters = { file = { filename_first = true } } },
 }
 
@@ -143,7 +148,7 @@ map('n', '<leader>sk', function() Snacks.picker.keymaps() end, { desc = 'Keymaps
 map('n', 'gd', function() Snacks.picker.lsp_definitions() end, { desc = 'Goto Definition' })
 map('n', 'gD', function() Snacks.picker.lsp_declarations() end, { desc = 'Goto Declaration' })
 map('n', 'grr', function() Snacks.picker.lsp_references() end, { desc = 'References' })
-map('n', '-', function() Snacks.explorer() end, { desc = 'File explorer' })
+map('n', '-', '<cmd>Oil<CR>', { desc = 'Open parent directory' })
 map({ 'n', 'v' }, '<leader>gB', function() Snacks.gitbrowse() end, { desc = 'Git Browse' })
 map('n', '<leader>rn', vim.lsp.buf.rename, { desc = 'Rename' })
 map({ 'n', 'x' }, '<leader>ca', vim.lsp.buf.code_action, { desc = 'Code Action' })
